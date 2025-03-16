@@ -19,11 +19,11 @@ inputs = {
   name       = local.api_gateway_name
   stage_name = "v1"
   routes = [
-    # {
-    #   path          = "/compraBolsa"
-    #   method        = "POST"
-    #   function_name = "${local.common.locals.project_name}-bundle-purchase-lambda-${local.environment.locals.name}"
-    # }
+    {
+      path          = "/run-scan"
+      method        = "POST"
+      function_name = "tvo-task-trigger-lambda-${local.environment.locals.name}"
+    }
   ]
   common_tags = local.common_tags
 }
