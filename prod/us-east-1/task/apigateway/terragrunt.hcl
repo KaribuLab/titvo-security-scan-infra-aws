@@ -1,5 +1,5 @@
 terraform {
-  source = "git::https://github.com/KaribuLab/terraform-aws-api-gateway.git?ref=v0.2.2"
+  source = "git::https://github.com/KaribuLab/terraform-aws-api-gateway.git?ref=v0.4.2"
 }
 
 locals {
