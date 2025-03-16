@@ -1,0 +1,34 @@
+# Archivos de entorno
+.env
+*.env
+.envrc
+
+# Archivos generados por Terragrunt
+.terragrunt-cache/
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+*.tfplan
+.terraform.lock.hcl
+terraform.tfvars.json
+terragrunt-debug.tfvars.json
+
+# Archivos generados por Terraform
+.terraform.tfstate.lock.info
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Archivos de IDE y editores
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db 
