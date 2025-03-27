@@ -6,10 +6,10 @@ locals {
   common      = read_terragrunt_config(find_in_parent_folders("common.hcl"))
   environment = read_terragrunt_config(find_in_parent_folders("environment.hcl"))
   common_tags = local.common.locals.tags
-  name        = "${local.common.locals.project_name}-reports-${local.environment.locals.name}"
+  bucket_name = "${local.common.locals.project_name}-reports-${local.environment.locals.name}"
 }
 
 inputs = {
-  bucket_name = "reports-${local.context.locals.name}"
-  common_tags = local.common.locals.tags
+  bucket_name = local.bucket_name
+  common_tags = local.common_tags
 }
