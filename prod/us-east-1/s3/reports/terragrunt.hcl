@@ -1,5 +1,5 @@
 terraform {
-  source = "${get_parent_terragrunt_dir()}/module/s3-static"
+  source = "../../../module/s3-static"
 }
 
 locals {
