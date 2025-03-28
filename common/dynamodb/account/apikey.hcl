@@ -9,6 +9,10 @@ locals {
     {
       name = "user_id"
       type = "S"
+    },
+    {
+      name = "api_key"
+      type = "S"
     }
   ]
 
@@ -16,6 +20,11 @@ locals {
     {
       name            = "user_id_gsi"
       hash_key        = "user_id"
+      projection_type = "ALL"
+    },
+    {
+      name            = "api_key_gsi"
+      hash_key        = "api_key"
       projection_type = "ALL"
     }
   ]

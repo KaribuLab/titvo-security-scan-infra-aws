@@ -1,7 +1,5 @@
 locals {
-  hash_key           = "scan_id"
-  ttl_attribute_name = "ttl"
-  ttl_enabled        = true
+  hash_key = "scan_id"
   attributes = [
     {
       name = "scan_id"
