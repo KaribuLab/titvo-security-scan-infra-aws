@@ -28,6 +28,11 @@ inputs = {
       path          = "/scan-status"
       method        = "POST"
       function_name = "tvo-task-status-lambda-${local.environment.locals.name}"
+    },
+    {
+      path          = "/cli-files"
+      method        = "POST"
+      function_name = "tvo-task-cli-files-lambda-${local.environment.locals.name}"
     }
   ]
   common_tags = local.common_tags
