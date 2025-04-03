@@ -9,6 +9,10 @@ locals {
   bucket_name = "${local.common.locals.project_name}-cli-files-${local.environment.locals.name}"
 }
 
+include {
+  path = find_in_parent_folders()
+}
+
 inputs = {
   bucket_name               = local.bucket_name
   common_tags               = local.common_tags

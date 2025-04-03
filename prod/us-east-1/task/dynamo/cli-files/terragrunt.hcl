@@ -14,6 +14,7 @@ locals {
 include {
   path = find_in_parent_folders()
 }
+
 inputs = merge(
   local.cli_files.locals,
   {
