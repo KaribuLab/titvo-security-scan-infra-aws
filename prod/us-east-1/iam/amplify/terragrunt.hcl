@@ -69,6 +69,16 @@ inputs = {
           dependency.repository.outputs.dynamodb_table_arn,
           dependency.user.outputs.dynamodb_table_arn
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogStream",
+          "logs:CreateLogGroup",
+          "logs:DescribeLogGroups",
+          "logs:PutLogEvents"
+        ]
+        Resource = "*"
       }
     ]
   })
