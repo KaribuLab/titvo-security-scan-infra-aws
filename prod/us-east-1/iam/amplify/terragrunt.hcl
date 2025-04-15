@@ -30,6 +30,13 @@ dependency "user" {
   }
 }
 
+dependency "session" {
+  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/account/dynamo/session"
+  mock_outputs = {
+    dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/session"
+  }
+}
+
 include {
   path = find_in_parent_folders()
 }
@@ -67,18 +74,9 @@ inputs = {
         Resource = [
           dependency.apikey.outputs.dynamodb_table_arn,
           dependency.repository.outputs.dynamodb_table_arn,
-          dependency.user.outputs.dynamodb_table_arn
+          dependency.user.outputs.dynamodb_table_arn,
+          dependency.session.outputs.dynamodb_table_arn
         ]
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "logs:CreateLogStream",
-          "logs:CreateLogGroup",
-          "logs:DescribeLogGroups",
-          "logs:PutLogEvents"
-        ]
-        Resource = "*"
       }
     ]
   })
