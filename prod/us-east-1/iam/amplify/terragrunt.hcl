@@ -73,9 +73,52 @@ inputs = {
         ]
         Resource = [
           dependency.apikey.outputs.dynamodb_table_arn,
-          dependency.repository.outputs.dynamodb_table_arn,
+          "${dependency.apikey.outputs.dynamodb_table_arn}/*"
+        ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:Query",
+          "dynamodb:Scan",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem"
+        ]
+        Resource = [
           dependency.user.outputs.dynamodb_table_arn,
-          dependency.session.outputs.dynamodb_table_arn
+          "${dependency.user.outputs.dynamodb_table_arn}/*"
+        ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:Query",
+          "dynamodb:Scan",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem"
+        ]
+        Resource = [
+          dependency.session.outputs.dynamodb_table_arn,
+          "${dependency.session.outputs.dynamodb_table_arn}/*"
+        ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:Query",
+          "dynamodb:Scan",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem"
+        ]
+        Resource = [
+          dependency.repository.outputs.dynamodb_table_arn,
+          "${dependency.repository.outputs.dynamodb_table_arn}/*"
         ]
       }
     ]
