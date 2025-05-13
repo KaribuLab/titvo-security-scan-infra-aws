@@ -41,10 +41,10 @@ Este repositorio contiene la infraestructura como código (IaC) para el sistema 
    ```
    
    También puedes añadir estas variables a tu archivo `.env` (asegúrate de no incluirlo en el control de versiones):
-   ```
-   AWS_ACCESS_KEY_ID=tu_access_key
-   AWS_SECRET_ACCESS_KEY=tu_secret_key
-   AWS_DEFAULT_REGION=us-east-1
+   ```bash
+   export AWS_ACCESS_KEY_ID="tu_access_key"
+   export AWS_SECRET_ACCESS_KEY="tu_secret_key"
+   export AWS_DEFAULT_REGION="us-east-1"
    ```
    
    Y cargarlas con:
