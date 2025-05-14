@@ -1,4 +1,4 @@
-# Titvo Security Scan - Infraestructura
+# Titvo Security Scan - Infraestructura AWS
 
 Este repositorio contiene la infraestructura como código (IaC) para el sistema de escaneo de seguridad de Titvo. La infraestructura está definida utilizando Terraform y orquestada con Terragrunt para facilitar la gestión de múltiples entornos y regiones.
 
@@ -29,7 +29,7 @@ Este repositorio contiene la infraestructura como código (IaC) para el sistema 
 
 1. Clona este repositorio:
    ```bash
-   git clone https://github.com/titvo/titvo-security-scan-infra.git
+   git clone https://github.com/KaribuLab/titvo-security-scan-infra-aws
    cd titvo-security-scan-infra
    ```
 
@@ -55,6 +55,30 @@ Este repositorio contiene la infraestructura como código (IaC) para el sistema 
 ## Uso
 
 ### Despliegue de Infraestructura
+
+Antes desplegar la infraestructura deberá desplegar todas las funciones lambda:
+
+- [titvo-auth-setup](https://github.com/KaribuLab/titvo-auth-setup)
+- [titvo-task-cli-files](https://github.com/KaribuLab/titvo-task-cli-files)
+- [titvo-task-trigger](https://github.com/KaribuLab/titvo-task-trigger)
+- [titvo-task-status](https://github.com/KaribuLab/titvo-task-status)
+
+> [!IMPORTANT]
+> Cada repositorio tiene su propio README con instrucciones para desplegar la infraestructura.
+
+Luego, modificar el archivo `common.hcl` para ajustar los valores usados en el proyecto para tu cuenta de AWS.
+
+```hcl
+locals {
+  project_name   = "my-project"
+  parameter_path = "/my-project"
+  bucket_name    = "${local.project_name}-terraform-state"
+  dynamodb_table = "${local.project_name}-tfstate-lock"
+  tags = {
+    my_tag = "my_value"
+  }
+}
+```
 
 Para desplegar todos los recursos en un entorno específico:
 
