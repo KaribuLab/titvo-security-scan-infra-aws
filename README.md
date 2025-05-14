@@ -112,7 +112,7 @@ Este repositorio contiene la infraestructura como código (IaC) para el sistema 
    - [titvo-task-status](https://github.com/KaribuLab/titvo-task-status)
 
    > [!IMPORTANT]
-   > Cada repositorio tiene su propio README con instrucciones para desplegar la infraestructura.<
+   > Cada repositorio tiene su propio README con instrucciones para desplegar la infraestructura.
 
 4. Por último, deberá desplegar el API Gateway:
 
