@@ -7,14 +7,24 @@ Este repositorio contiene la infraestructura como código (IaC) para el sistema 
 ```
 .
 ├── .github/            # Configuraciones de GitHub y flujos de CI/CD
+├── .vscode/            # Configuraciones del IDE VSCode
 ├── common/             # Módulos de Terraform compartidos entre entornos
 │   └── dynamodb/       # Configuración de DynamoDB compartida
+├── module/             # Módulos de Terraform reutilizables
+│   ├── iam-role/       # Módulo para crear roles IAM
+│   ├── s3-static/      # Módulo para crear buckets S3 para contenido estático
+│   └── s3-upload/      # Módulo para crear buckets S3 para subida de archivos
 ├── prod/               # Entorno de producción
 │   └── us-east-1/      # Región us-east-1 para producción
 │       ├── account/    # Recursos a nivel de cuenta
+│       ├── iam/        # Configuración de roles y políticas IAM
+│       ├── parameter/  # Parámetros de SSM Parameter Store
+│       ├── s3/         # Configuración de buckets S3
 │       └── task/       # Recursos específicos de tareas
 │           ├── apigateway/ # Configuración de API Gateway
 │           └── dynamo/     # Configuración de DynamoDB
+├── .gitignore          # Patrones de archivos a ignorar por Git
+├── LICENSE             # Licencia Apache 2.0
 ├── common.hcl          # Variables comunes para todos los entornos
 └── terragrunt.hcl      # Configuración principal de Terragrunt
 ```
@@ -30,7 +40,7 @@ Este repositorio contiene la infraestructura como código (IaC) para el sistema 
 1. Clona este repositorio:
    ```bash
    git clone https://github.com/KaribuLab/titvo-security-scan-infra-aws
-   cd titvo-security-scan-infra
+   cd titvo-security-scan-infra-aws
    ```
 
 2. Configura las variables de entorno para AWS:
@@ -56,43 +66,64 @@ Este repositorio contiene la infraestructura como código (IaC) para el sistema 
 
 ### Despliegue de Infraestructura
 
-Antes desplegar la infraestructura deberá desplegar todas las funciones lambda:
+1. Modifique el archivo `common.hcl` para ajustar los valores usados en el proyecto para tu cuenta de AWS.
 
-- [titvo-auth-setup](https://github.com/KaribuLab/titvo-auth-setup)
-- [titvo-task-cli-files](https://github.com/KaribuLab/titvo-task-cli-files)
-- [titvo-task-trigger](https://github.com/KaribuLab/titvo-task-trigger)
-- [titvo-task-status](https://github.com/KaribuLab/titvo-task-status)
-
-> [!IMPORTANT]
-> Cada repositorio tiene su propio README con instrucciones para desplegar la infraestructura.
-
-Luego, modificar el archivo `common.hcl` para ajustar los valores usados en el proyecto para tu cuenta de AWS.
-
-```hcl
-locals {
-  project_name   = "my-project"
-  parameter_path = "/my-project"
-  bucket_name    = "${local.project_name}-terraform-state"
-  dynamodb_table = "${local.project_name}-tfstate-lock"
-  tags = {
-    my_tag = "my_value"
+  ```hcl
+  locals {
+    project_name   = "my-project"
+    parameter_path = "/my-project"
+    bucket_name    = "${local.project_name}-terraform-state"
+    dynamodb_table = "${local.project_name}-tfstate-lock"
+    tags = {
+      my_tag = "my_value"
+    }
   }
-}
-```
+  ```
 
-Para desplegar todos los recursos en un entorno específico:
+2. Ahora deberá crear todos los recursos sin incluir el API Gateway:
 
-```bash
-cd prod/us-east-1
-terragrunt run-all apply
-```
+  ```bash
+  cd prod/us-east-1
+  cwd=$(pwd)
+  cd $cwd/account/dynamo/apikey
+  terragrunt apply
+  cd $cwd/account/dynamo/repository
+  terragrunt apply
+  cd $cwd/account/dynamo/user
+  terragrunt apply
+  cd $cwd/parameter/dynamo/parameter
+  terragrunt apply
+  cd $cwd/s3/cli-files
+  terragrunt apply
+  cd $cwd/s3/reports
+  terragrunt apply
+  cd $cwd/task/dynamo/cli-files
+  terragrunt apply
+  cd $cwd/task/dynamo/task
+  terragrunt apply
 
-Para desplegar un componente específico:
+  ```
 
-```bash
-cd prod/us-east-1/task/dynamo
-terragrunt apply
-```
+3. Luego, deberá desplegar todas las funciones lambda:
+
+   - [titvo-auth-setup](https://github.com/KaribuLab/titvo-auth-setup)
+   - [titvo-task-cli-files](https://github.com/KaribuLab/titvo-task-cli-files)
+   - [titvo-task-trigger](https://github.com/KaribuLab/titvo-task-trigger)
+   - [titvo-task-status](https://github.com/KaribuLab/titvo-task-status)
+
+   > [!IMPORTANT]
+   > Cada repositorio tiene su propio README con instrucciones para desplegar la infraestructura.<
+
+4. Por último, deberá desplegar el API Gateway:
+
+  ```bash
+  cd prod/us-east-1
+  cwd=$(pwd)
+  cd $cwd/account/apigateway
+  terragrunt apply
+  cd $cwd/task/apigateway
+  terragrunt apply
+  ```
 
 ### Destrucción de Infraestructura
 
@@ -111,8 +142,32 @@ El proyecto está configurado para soportar múltiples entornos:
 
 ## Componentes Principales
 
-- **DynamoDB**: Almacenamiento de datos para los resultados de escaneo de seguridad
-- **API Gateway**: Endpoints para interactuar con el sistema de escaneo
+- **DynamoDB**:
+  - **apikey**: Almacena las claves de API para la autenticación de clientes.
+  - **repository**: Almacena información sobre los repositorios escaneados.
+  - **user**: Gestiona los usuarios del sistema.
+  - **task**: Almacena las tareas de escaneo y sus estados.
+  - **cli-files**: Guarda información sobre los archivos de resultados del CLI.
+
+- **S3**:
+  - **cli-files**: Almacena los archivos subidos por el CLI de escaneo.
+  - **reports**: Almacena los informes generados de los escaneos.
+
+- **IAM**:
+  - Roles y políticas para los distintos servicios y funciones Lambda.
+
+- **API Gateway**: 
+  - Endpoints para interactuar con el sistema de escaneo.
+  - Rutas para la autenticación y operaciones de escaneo.
+
+- **Parameter Store**:
+  - Almacena parámetros de configuración y secretos.
+
+- **Lambda**:
+  - **auth-setup**: Gestiona la autenticación y configuración inicial.
+  - **task-cli-files**: Procesa los archivos subidos por el CLI.
+  - **task-trigger**: Inicia tareas de escaneo.
+  - **task-status**: Actualiza y consulta el estado de las tareas.
 
 ## Contribución
 
@@ -125,3 +180,7 @@ El proyecto está configurado para soportar múltiples entornos:
 ## Contacto
 
 Equipo de Area Creación - Titvo 
+
+## Licencia
+
+Este proyecto está licenciado bajo los términos de la [Licencia Apache 2.0](LICENSE). Consulte el archivo LICENSE para más detalles. 
