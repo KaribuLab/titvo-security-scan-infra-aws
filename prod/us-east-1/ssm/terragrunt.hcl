@@ -25,7 +25,7 @@ dependency "dynamo-cli-files-table" {
   config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/task/dynamo/cli-files"
 }
 
-dependency "dynamo-configuration-table" {
+dependency "dynamo-parameter-table" {
   config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/parameter/dynamo/parameter"
 }
 
