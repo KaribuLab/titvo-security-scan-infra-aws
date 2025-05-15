@@ -31,9 +31,48 @@ Este repositorio contiene la infraestructura como código (IaC) para el sistema 
 
 ## Requisitos Previos
 
+### Herramientas
+
 - [Terraform](https://www.terraform.io/downloads.html) (v1.9.8+)
 - [Terragrunt](https://terragrunt.gruntwork.io/docs/getting-started/install/) (v0.69.1+)
 - Variables de entorno AWS configuradas
+
+### VPC
+
+Para simplificar el despliegue de la infraestructura, se ha creado un script que despliega la infraestructura de VPC y subnets.
+
+```bash
+cd utils/prod/us-east-1/vpc
+terragrunt apply
+```
+
+Para que esto sea usado por otros componentes de la plataforma es necesario configurar un parámetro en el SSM Parameter Store.
+
+```bash
+aws ssm put-parameter --name "/tvo/security-scan/prod/infra/vpc-id" --type "String" --value "vpc-0577524a0e9871789" --region us-east-1
+aws ssm put-parameter --name "/tvo/security-scan/prod/infra/subnet1" --type "String" --value "subnet-0577524a0e9871789" --region us-east-1
+```
+
+> [!IMPORTANT]
+> El prefijo de la ruta de parámetros se construye a partir de lo que está en el archivo `common.hcl` en la variable `project_name` y el `environment` que se está usando. Es importante mantener el nombre que viene después del prefijo para que el secreto se pueda usar en la aplicación.
+
+### Secret Manager
+
+Para encriptar información sensible se utiliza una key que está almacenada en AWS Secret Manager. Con esta key se encripta la información sensible en tablas de DynamoDB. Es necesario crear un secreto en AWS Secret Manager con la siguiente información:
+
+```bash
+aws secretsmanager create-secret --name "/tvo/security-scan/prod/aes_secret" --secret-string "my-secret-key" --region us-east-1
+```
+
+Luego necesitamos almacenar el ARN y el nombre del secreto en el SSM Parameter Store.
+
+```bash
+aws ssm put-parameter --name "/tvo/security-scan/prod/infra/encryption-key-name" --type "String" --value "tvo/security-scan/prod/aes_secret" --region us-east-1
+aws ssm put-parameter --name "/tvo/security-scan/prod/infra/secret-manager-arn" --type "String" --value "arn:aws:secretsmanager:us-east-1:123456789012:secret:tvo/security-scan/prod/aes_secret-a1b2c3" --region us-east-1
+```
+
+> [!IMPORTANT]
+> El prefijo de la ruta de parámetros se construye a partir de lo que está en el archivo `common.hcl` en la variable `project_name` y el `environment` que se está usando. Es importante mantener el nombre que viene después del prefijo para que el secreto se pueda usar en la aplicación.
 
 ## Configuración
 
@@ -104,7 +143,11 @@ Este repositorio contiene la infraestructura como código (IaC) para el sistema 
 
   ```
 
-3. Luego, deberá desplegar todas las funciones lambda:
+3. Luego, debes desplegar Batch Job Definition y Job Queue (y otros recursos necesarios):
+
+   - [titvo-security-scan](https://github.com/KaribuLab/titvo-security-scan)
+
+4. Luego, deberá desplegar todas las funciones lambda:
 
    - [titvo-auth-setup](https://github.com/KaribuLab/titvo-auth-setup)
    - [titvo-task-cli-files](https://github.com/KaribuLab/titvo-task-cli-files)
@@ -114,7 +157,7 @@ Este repositorio contiene la infraestructura como código (IaC) para el sistema 
    > [!IMPORTANT]
    > Cada repositorio tiene su propio README con instrucciones para desplegar la infraestructura.
 
-4. Por último, deberá desplegar el API Gateway:
+5. Por último, deberá desplegar el API Gateway:
 
   ```bash
   cd prod/us-east-1
@@ -168,6 +211,10 @@ El proyecto está configurado para soportar múltiples entornos:
   - **task-cli-files**: Procesa los archivos subidos por el CLI.
   - **task-trigger**: Inicia tareas de escaneo.
   - **task-status**: Actualiza y consulta el estado de las tareas.
+
+- **Batch**:
+  - **Job Definition**: Define el trabajo a realizar.
+  - **Job Queue**: Cola de trabajos.
 
 ## Contribución
 
