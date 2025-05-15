@@ -6,7 +6,7 @@ locals {
   common      = read_terragrunt_config(find_in_parent_folders("common.hcl"))
   environment = read_terragrunt_config(find_in_parent_folders("environment.hcl"))
   common_tags = local.common.locals.tags
-  base_path   = "${local.common.locals.parameter_path}/${local.environment.locals.environment}/infra"
+  base_path   = "${local.common.locals.parameter_path}/${local.environment.locals.name}/infra"
 }
 
 dependency "bucket-cli-files" {
