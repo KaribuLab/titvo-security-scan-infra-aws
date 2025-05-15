@@ -123,7 +123,7 @@ inputs = {
     {
       name  = "reports-bucket-name"
       type  = "String"
-      value = dependency.bucket-reports.outputs.bucket_id
+      value = dependency.bucket-reports.outputs.bucket_name
     }
   ]
 }
