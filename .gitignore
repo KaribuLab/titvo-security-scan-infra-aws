@@ -24,7 +24,6 @@ override.tf.json
 
 # Archivos de IDE y editores
 .idea/
-.vscode/
 *.swp
 *.swo
 *~
