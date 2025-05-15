@@ -41,6 +41,9 @@ Este repositorio contiene la infraestructura como código (IaC) para el sistema 
 
 Para simplificar el despliegue de la infraestructura, se ha creado un script que despliega la infraestructura de VPC y subnets.
 
+> [!NOTE]
+> Esto es opcional, si ya tienes una VPC y subnets configuradas puedes omitir este paso.
+
 ```bash
 cd utils/prod/us-east-1/vpc
 terragrunt apply
