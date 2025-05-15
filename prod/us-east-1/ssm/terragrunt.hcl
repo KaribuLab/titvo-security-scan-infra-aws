@@ -78,12 +78,12 @@ inputs = {
     {
       name  = "dynamo-configuration-table-arn"
       type  = "String"
-      value = dependency.dynamo-configuration-table.outputs.dynamodb_table_arn
+      value = dependency.dynamo-parameter-table.outputs.dynamodb_table_arn
     },
     {
       name  = "dynamo-configuration-table-name"
       type  = "String"
-      value = element(split("/", dependency.dynamo-configuration-table.outputs.dynamodb_table_arn), length(split("/", dependency.dynamo-configuration-table.outputs.dynamodb_table_arn)) - 1)
+      value = element(split("/", dependency.dynamo-parameter-table.outputs.dynamodb_table_arn), length(split("/", dependency.dynamo-parameter-table.outputs.dynamodb_table_arn)) - 1)
     },
     {
       name  = "dynamo-parameter-table-arn"
