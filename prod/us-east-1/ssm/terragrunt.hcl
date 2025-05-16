@@ -116,12 +116,12 @@ inputs = {
       value = dependency.dynamo-task-table.outputs.dynamodb_table_id
     },
     {
-      name  = "reports-bucket-arn"
+      name  = "report-bucket-arn"
       type  = "String"
       value = dependency.bucket-reports.outputs.bucket_arn
     },
     {
-      name  = "reports-bucket-name"
+      name  = "report-bucket-name"
       type  = "String"
       value = dependency.bucket-reports.outputs.bucket_name
     }
