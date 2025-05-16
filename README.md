@@ -89,6 +89,16 @@ aws ssm put-parameter --name "/tvo/security-scan/prod/infra/secret-manager-arn" 
 
 ### Despliegue de Infraestructura
 
+Como paso opcional puedes crear un archivo `common_tags.json` en la raíz del proyecto con las etiquetas que quieres aplicar a todos los recursos.
+
+```json
+{
+  "Project": "Titvo Security Scan",
+  "Customer": "Titvo",
+  "Team": "Area Creacion"
+}
+```
+
 1. Configura las variables de entorno para AWS:
    ```bash
    export AWS_ACCESS_KEY_ID="tu_access_key"
