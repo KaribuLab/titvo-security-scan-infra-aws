@@ -40,5 +40,7 @@ inputs = {
       }
     ]
   }
-  tags = local.common_tags
+  tags = merge(local.common_tags, {
+    Name = "${local.common.locals.project_name}-vpc-${local.environment.locals.name}"
+  })
 }
