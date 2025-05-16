@@ -94,8 +94,9 @@ aws ssm put-parameter --name "/tvo/security-scan/prod/infra/secret-manager-arn" 
    export AWS_ACCESS_KEY_ID="tu_access_key"
    export AWS_SECRET_ACCESS_KEY="tu_secret_key"
    export AWS_DEFAULT_REGION="us-east-1"
-   export PROJECT_NAME="titvo-security-scan" # Esto se usará como prefijo para los recursos
-   export PARAMETER_PATH="/titvo/security-scan" # Esto se usará como prefijo para los parámetros
+   export PROJECT_NAME="titvo-security-scan" # Opcional si quiere mantener los valores por defecto. Esto se usará como prefijo para los recursos
+   export PARAMETER_PATH="/titvo/security-scan" # Opcional si quiere mantener los valores por defecto. Esto se usará como prefijo para los parámetros
+   export BUCKET_STATE_NAME="titvo-security-scan-terraform-state" # Opcional, si no se especifica se usará el nombre del proyecto. Por ejemplo: titvo-security-scan-terraform-state
    ```
    
    También puedes añadir estas variables a tu archivo `.env` (asegúrate de no incluirlo en el control de versiones):
@@ -103,8 +104,9 @@ aws ssm put-parameter --name "/tvo/security-scan/prod/infra/secret-manager-arn" 
    export AWS_ACCESS_KEY_ID="tu_access_key"
    export AWS_SECRET_ACCESS_KEY="tu_secret_key"
    export AWS_DEFAULT_REGION="us-east-1"
-   export PROJECT_NAME="titvo-security-scan" # Esto se usará como prefijo para los recursos
+   export PROJECT_NAME="titvo-security-scan" # Opcional si quiere mantener los valores por defecto. Esto se usará como prefijo para los recursos
    export PARAMETER_PATH="/titvo/security-scan" # Esto se usará como prefijo para los parámetros
+   export BUCKET_STATE_NAME="titvo-security-scan-terraform-state" # Opcional, si no se especifica se usará el nombre del proyecto. Por ejemplo: titvo-security-scan-terraform-state
    ```
    
    Y cargarlas con:
@@ -112,29 +114,31 @@ aws ssm put-parameter --name "/tvo/security-scan/prod/infra/secret-manager-arn" 
    source .env
    ```
 
+   > [!IMPORTANT]
+   > Se recomienda usar la variable `BUCKET_STATE_NAME` para mantener el estado de la infraestructura, ya que estos son únicos y podrían haber conflictos si se usa el mismo nombre para diferentes proyectos.
+
 2. Ahora deberá crear todos los recursos sin incluir el API Gateway:
 
-  ```bash
-  cd prod/us-east-1
-  cwd=$(pwd)
-  cd $cwd/account/dynamo/apikey
-  terragrunt apply
-  cd $cwd/account/dynamo/repository
-  terragrunt apply
-  cd $cwd/account/dynamo/user
-  terragrunt apply
-  cd $cwd/parameter/dynamo/parameter
-  terragrunt apply
-  cd $cwd/s3/cli-files
-  terragrunt apply
-  cd $cwd/s3/reports
-  terragrunt apply
-  cd $cwd/task/dynamo/cli-files
-  terragrunt apply
-  cd $cwd/task/dynamo/task
-  terragrunt apply
-
-  ```
+    ```bash
+    cd prod/us-east-1
+    cwd=$(pwd)
+    cd $cwd/account/dynamo/apikey
+    terragrunt apply
+    cd $cwd/account/dynamo/repository
+    terragrunt apply
+    cd $cwd/account/dynamo/user
+    terragrunt apply
+    cd $cwd/parameter/dynamo/parameter
+    terragrunt apply
+    cd $cwd/s3/cli-files
+    terragrunt apply
+    cd $cwd/s3/reports
+    terragrunt apply
+    cd $cwd/task/dynamo/cli-files
+    terragrunt apply
+    cd $cwd/task/dynamo/task
+    terragrunt apply
+    ```
 
 3. Luego, debes desplegar Batch Job Definition y Job Queue (y otros recursos necesarios):
 
