@@ -133,23 +133,23 @@ Como paso opcional puedes crear un archivo `common_tags.json` en la raíz del pr
     cd prod/us-east-1
     cwd=$(pwd)
     cd $cwd/account/dynamo/apikey
-    terragrunt apply --auto-approve
+    terragrunt apply --terragrunt-non-interactive --auto-approve
     cd $cwd/account/dynamo/repository
-    terragrunt apply --auto-approve
+    terragrunt apply --terragrunt-non-interactive --auto-approve
     cd $cwd/account/dynamo/user
-    terragrunt apply --auto-approve
+    terragrunt apply --terragrunt-non-interactive --auto-approve
     cd $cwd/parameter/dynamo/parameter
-    terragrunt apply --auto-approve
+    terragrunt apply --terragrunt-non-interactive --auto-approve
     cd $cwd/s3/cli-files
-    terragrunt apply --auto-approve
+    terragrunt apply --terragrunt-non-interactive --auto-approve
     cd $cwd/s3/reports
-    terragrunt apply --auto-approve
+    terragrunt apply --terragrunt-non-interactive --auto-approve
     cd $cwd/task/dynamo/cli-files
-    terragrunt apply --auto-approve
+    terragrunt apply --terragrunt-non-interactive --auto-approve
     cd $cwd/task/dynamo/task
-    terragrunt apply --auto-approve
+    terragrunt apply --terragrunt-non-interactive --auto-approve
     cd $cwd/ssm
-    terragrunt apply --auto-approve
+    terragrunt apply --terragrunt-non-interactive --auto-approve
     ```
 
 3. Luego, debes desplegar Batch Job Definition y Job Queue (y otros recursos necesarios):
@@ -172,9 +172,9 @@ Como paso opcional puedes crear un archivo `common_tags.json` en la raíz del pr
   cd prod/us-east-1
   cwd=$(pwd)
   cd $cwd/account/apigateway
-  terragrunt apply
+  terragrunt apply --terragrunt-non-interactive --auto-approve
   cd $cwd/task/apigateway
-  terragrunt apply
+  terragrunt apply --terragrunt-non-interactive --auto-approve
   ```
 
 ### Destrucción de Infraestructura
