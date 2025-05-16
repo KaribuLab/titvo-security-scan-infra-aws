@@ -63,7 +63,7 @@ inputs = {
     {
       name  = "dynamo-api-key-table-name"
       type  = "String"
-      value = element(split("/", dependency.dynamo-api-key-table.outputs.dynamodb_table_arn), length(split("/", dependency.dynamo-api-key-table.outputs.dynamodb_table_arn)) - 1)
+      value = dependency.dynamo-api-key-table.outputs.dynamodb_table_id
     },
     {
       name  = "dynamo-cli-files-table-arn"
@@ -73,7 +73,7 @@ inputs = {
     {
       name  = "dynamo-cli-files-table-name"
       type  = "String"
-      value = element(split("/", dependency.dynamo-cli-files-table.outputs.dynamodb_table_arn), length(split("/", dependency.dynamo-cli-files-table.outputs.dynamodb_table_arn)) - 1)
+      value = dependency.dynamo-cli-files-table.outputs.dynamodb_table_id
     },
     {
       name  = "dynamo-configuration-table-arn"
@@ -83,7 +83,7 @@ inputs = {
     {
       name  = "dynamo-configuration-table-name"
       type  = "String"
-      value = element(split("/", dependency.dynamo-parameter-table.outputs.dynamodb_table_arn), length(split("/", dependency.dynamo-parameter-table.outputs.dynamodb_table_arn)) - 1)
+      value = dependency.dynamo-parameter-table.outputs.dynamodb_table_id
     },
     {
       name  = "dynamo-parameter-table-arn"
@@ -93,12 +93,12 @@ inputs = {
     {
       name  = "dynamo-parameter-table-name"
       type  = "String"
-      value = element(split("/", dependency.dynamo-parameter-table.outputs.dynamodb_table_arn), length(split("/", dependency.dynamo-parameter-table.outputs.dynamodb_table_arn)) - 1)
+      value = dependency.dynamo-parameter-table.outputs.dynamodb_table_id
     },
     {
       name  = "dynamo-hint-table-name"
       type  = "String"
-      value = element(split("/", dependency.dynamo-repository-table.outputs.dynamodb_table_arn), length(split("/", dependency.dynamo-repository-table.outputs.dynamodb_table_arn)) - 1)
+      value = dependency.dynamo-repository-table.outputs.dynamodb_table_id
     },
     {
       name  = "dynamo-repository-table-arn"
@@ -113,7 +113,7 @@ inputs = {
     {
       name  = "dynamo-task-table-name"
       type  = "String"
-      value = element(split("/", dependency.dynamo-task-table.outputs.dynamodb_table_arn), length(split("/", dependency.dynamo-task-table.outputs.dynamodb_table_arn)) - 1)
+      value = dependency.dynamo-task-table.outputs.dynamodb_table_id
     },
     {
       name  = "reports-bucket-arn"
