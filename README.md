@@ -85,11 +85,17 @@ aws ssm put-parameter --name "/tvo/security-scan/prod/infra/secret-manager-arn" 
    cd titvo-security-scan-infra-aws
    ```
 
-2. Configura las variables de entorno para AWS:
+## Uso
+
+### Despliegue de Infraestructura
+
+1. Configura las variables de entorno para AWS:
    ```bash
    export AWS_ACCESS_KEY_ID="tu_access_key"
    export AWS_SECRET_ACCESS_KEY="tu_secret_key"
    export AWS_DEFAULT_REGION="us-east-1"
+   export PROJECT_NAME="titvo-security-scan" # Esto se usará como prefijo para los recursos
+   export PARAMETER_PATH="/titvo/security-scan" # Esto se usará como prefijo para los parámetros
    ```
    
    También puedes añadir estas variables a tu archivo `.env` (asegúrate de no incluirlo en el control de versiones):
@@ -97,30 +103,14 @@ aws ssm put-parameter --name "/tvo/security-scan/prod/infra/secret-manager-arn" 
    export AWS_ACCESS_KEY_ID="tu_access_key"
    export AWS_SECRET_ACCESS_KEY="tu_secret_key"
    export AWS_DEFAULT_REGION="us-east-1"
+   export PROJECT_NAME="titvo-security-scan" # Esto se usará como prefijo para los recursos
+   export PARAMETER_PATH="/titvo/security-scan" # Esto se usará como prefijo para los parámetros
    ```
    
    Y cargarlas con:
    ```bash
    source .env
    ```
-
-## Uso
-
-### Despliegue de Infraestructura
-
-1. Modifique el archivo `common.hcl` para ajustar los valores usados en el proyecto para tu cuenta de AWS.
-
-  ```hcl
-  locals {
-    project_name   = "my-project"
-    parameter_path = "/my-project"
-    bucket_name    = "${local.project_name}-terraform-state"
-    dynamodb_table = "${local.project_name}-tfstate-lock"
-    tags = {
-      my_tag = "my_value"
-    }
-  }
-  ```
 
 2. Ahora deberá crear todos los recursos sin incluir el API Gateway:
 

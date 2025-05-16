@@ -1,6 +1,6 @@
 locals {
-  project_name   = "tvo-security-scan"
-  parameter_path = "/tvo/security-scan"
+  project_name   = get_env("PROJECT_NAME", "titvo-security-scan")
+  parameter_path = get_env("PARAMETER_PATH", "/titvo/security-scan")
   bucket_name    = "${local.project_name}-terraform-state"
   dynamodb_table = "${local.project_name}-tfstate-lock"
   tags = {
