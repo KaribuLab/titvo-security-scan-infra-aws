@@ -1,242 +1,292 @@
-# Titvo Security Scan - Infraestructura AWS
+# Titvo Security Scan – Infraestructura AWS
 
-Este repositorio contiene la infraestructura como código (IaC) para el sistema de escaneo de seguridad de Titvo. La infraestructura está definida utilizando Terraform y orquestada con Terragrunt para facilitar la gestión de múltiples entornos y regiones.
+> Infraestructura como código (IaC) lista para desplegar **Titvo Security Scan** en AWS usando **Terraform** y **Terragrunt**.
+>
+> Diseñada para que cualquier desarrollador –incluso sin mucha experiencia en AWS– pueda levantar, mantener y destruir la plataforma de forma segura y reproducible.
 
-## Estructura del Proyecto
+---
 
+## 🗺️ Tabla de contenidos
+
+- [Titvo Security Scan – Infraestructura AWS](#titvo-security-scan--infraestructura-aws)
+  - [🗺️ Tabla de contenidos](#️-tabla-de-contenidos)
+  - [Introducción](#introducción)
+  - [Arquitectura de alto nivel](#arquitectura-de-alto-nivel)
+  - [Pre‑requisitos](#prerequisitos)
+  - [Estructura del repositorio](#estructura-del-repositorio)
+  - [Configuración inicial](#configuración-inicial)
+  - [Despliegue rápido](#despliegue-rápido)
+  - [Despliegue paso a paso](#despliegue-paso-a-paso)
+    - [1 ‑ Provisionar redes (VPC + subnets)](#1--provisionar-redes-vpc--subnets)
+    - [2 ‑ Desplegar componentes base (DynamoDB, S3, parámetros, …)](#2--desplegar-componentes-base-dynamodb-s3-parámetros-)
+    - [3 ‑ Crear secreto de cifrado (Secrets Manager)](#3--crear-secreto-de-cifrado-secrets-manager)
+    - [4 ‑ Desplegar AWS Batch y Lambda functions](#4--desplegar-aws-batch-y-lambda-functions)
+    - [5 ‑ Desplegar API Gateway](#5--desplegar-api-gateway)
+  - [Destrucción de la infraestructura](#destrucción-de-la-infraestructura)
+  - [Preguntas frecuentes](#preguntas-frecuentes)
+  - [Contribuir](#contribuir)
+  - [Licencia](#licencia)
+    - [¿Necesitas ayuda?](#necesitas-ayuda)
+
+---
+
+## Introducción
+
+**Titvo Security Scan** es un servicio de análisis de seguridad de código que se integra con GitHub y Bitbucket. Este repositorio contiene todo el código de infraestructura necesario para operar el servicio en AWS.
+
+* **Terraform** define los recursos (S3, DynamoDB, etc.).
+* **Terragrunt** orquesta entornos y regiones, aplicando buenas prácticas DRY.
+* **AWS** aloja la solución de forma escalable y de bajo costo.
+
+> **¿Por qué IaC?** Porque versionar la infraestructura permite reproducir entornos, hacer revisiones en PR y auditar cambios fácilmente.
+
+---
+
+## Arquitectura de alto nivel
+
+```mermaid
+flowchart TD
+    CLI(Cliente CLI) -->|Sube archivo| S3_CLI[S3 cli-files]
+    CLI -->|Solicita escaneo| API[API Gateway]
+    API --> LambdaAuth[Lambda auth-setup]
+    API --> LambdaTrigger[Lambda task-trigger]
+    LambdaTrigger --> BatchQueue[Batch Job Queue]
+    BatchQueue --> BatchJob[Job Definition]
+    BatchJob --> RepoScan[DynamoDB task]
+    RepoScan --> S3Reports[S3 reports]
+    subgraph Almacenamiento
+        DynamoAPI[DynamoDB apikey]
+        DynamoRepo[DynamoDB repository]
+        DynamoUser[DynamoDB user]
+        DynamoTask[DynamoDB task]
+        S3_CLI
+        S3Reports
+    end
 ```
+
+| Componente                   | Propósito                                  | Notas rápidas                                    |
+| ---------------------------- | ------------------------------------------ | ------------------------------------------------ |
+| **API Gateway**              | Expone endpoints REST/HTTP                 | Autenticación por API Key + Lambda authorizer    |
+| **Lambda (auth‑setup)**      | Gestiona autenticación                     | Valida claves y emite tokens                     |
+| **Lambda (task‑trigger)**    | Encola trabajos de escaneo                 | Publica en AWS Batch                             |
+| **Lambda (task‑status)**     | Consulta estado                            | Lectura de DynamoDB                              |
+| **AWS Batch**                | Ejecuta contenedores de escaneo            | Auto‑scale por demanda                           |
+| **S3 (cli-files / reports)** | Almacena archivos origen y reportes        | Versionado activado                              |
+| **DynamoDB**                 | Persistencia (users, repos, tasks, apikey) | Todas las tablas usan claves primarias sencillas |
+| **SSM Parameter Store**      | Variables de entorno y ARNs                | Evita hard‑codear valores                        |
+| **Secrets Manager**          | Secreto AES para cifrado                   | ARN referenciado desde Parameter Store           |
+
+---
+
+## Pre‑requisitos
+
+| Herramienta    | Versión recomendada | Instalación                                                                                                                                                    |
+| -------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Terraform**  | ≥ 1.9.8             | [https://developer.hashicorp.com/terraform/install](https://developer.hashicorp.com/terraform/install)                                                         |
+| **Terragrunt** | ≥ 0.69.1            | [https://terragrunt.gruntwork.io](https://terragrunt.gruntwork.io)                                                                                             |
+| **AWS CLI**    | ≥ 2.15              | [https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) |
+| **Cuenta AWS** | Permisos admin      | Necesaria para crear recursos                                                                                                                                  |
+
+Además:
+
+* Llave de acceso (`AWS_ACCESS_KEY_ID` y `AWS_SECRET_ACCESS_KEY`).
+* Conocimientos básicos de línea de comandos.
+
+> ¿Nuevo en Terraform? Revisa [Terraform en 10 min](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/terraform-quick-start).
+
+---
+
+## Estructura del repositorio
+
+```text
 .
-├── .github/            # Configuraciones de GitHub y flujos de CI/CD
-├── .vscode/            # Configuraciones del IDE VSCode
-├── common/             # Módulos de Terraform compartidos entre entornos
-│   └── dynamodb/       # Configuración de DynamoDB compartida
-├── module/             # Módulos de Terraform reutilizables
-│   ├── iam-role/       # Módulo para crear roles IAM
-│   ├── s3-static/      # Módulo para crear buckets S3 para contenido estático
-│   └── s3-upload/      # Módulo para crear buckets S3 para subida de archivos
+├── .github/            # Workflows de CI/CD y plantillas de PR
+├── common/             # Módulos compartidos (p.ej. DynamoDB común)
+├── module/             # Módulos reutilizables (IAM, S3, …)
 ├── prod/               # Entorno de producción
-│   └── us-east-1/      # Región us-east-1 para producción
-│       ├── account/    # Recursos a nivel de cuenta
-│       ├── iam/        # Configuración de roles y políticas IAM
-│       ├── parameter/  # Parámetros de SSM Parameter Store
-│       ├── s3/         # Configuración de buckets S3
-│       └── task/       # Recursos específicos de tareas
-│           ├── apigateway/ # Configuración de API Gateway
-│           └── dynamo/     # Configuración de DynamoDB
-├── .gitignore          # Patrones de archivos a ignorar por Git
-├── LICENSE             # Licencia Apache 2.0
-├── common.hcl          # Variables comunes para todos los entornos
-└── terragrunt.hcl      # Configuración principal de Terragrunt
+│   └── us-east-1/      # Región us-east-1
+│       ├── account/    # Recursos a nivel cuenta (Dynamo, API GW, …)
+│       ├── iam/        # Roles y políticas IAM
+│       ├── parameter/  # Parámetros SSM de entorno
+│       ├── s3/         # Buckets S3
+│       └── task/       # Recursos específicos de tareas (Batch, API GW)
+├── utils/              # Scripts auxiliares (VPC, etiquetas, …)
+├── common.hcl          # Variables globales
+└── terragrunt.hcl      # Terragrunt raíz
 ```
 
-## Requisitos Previos
+Cada directorio `*/terragrunt.hcl` hereda de `common.hcl`, lo que evita duplicar código.
 
-### Herramientas
+---
 
-- [Terraform](https://www.terraform.io/downloads.html) (v1.9.8+)
-- [Terragrunt](https://terragrunt.gruntwork.io/docs/getting-started/install/) (v0.69.1+)
-- Variables de entorno AWS configuradas
+## Configuración inicial
 
-### VPC
+1. **Clonar el repositorio**
 
-Para simplificar el despliegue de la infraestructura, se ha creado un script que despliega la infraestructura de VPC y subnets.
-
-> [!NOTE]
-> Esto es opcional, si ya tienes una VPC y subnets configuradas puedes omitir este paso.
-
-```bash
-cd utils/prod/us-east-1/vpc
-terragrunt apply
-```
-
-Para que esto sea usado por otros componentes de la plataforma es necesario configurar un parámetro en el SSM Parameter Store.
-
-```bash
-aws ssm put-parameter --name "/tvo/security-scan/prod/infra/vpc-id" --type "String" --value "vpc-0577524a0e9871789" --region us-east-1
-aws ssm put-parameter --name "/tvo/security-scan/prod/infra/subnet1" --type "String" --value "subnet-0577524a0e9871789" --region us-east-1
-```
-
-> [!IMPORTANT]
-> El prefijo de la ruta de parámetros se construye a partir de lo que está en el archivo `common.hcl` en la variable `project_name` y el `environment` que se está usando. Es importante mantener el nombre que viene después del prefijo para que el secreto se pueda usar en la aplicación.
-
-### Secret Manager
-
-Para encriptar información sensible se utiliza una key que está almacenada en AWS Secret Manager. Con esta key se encripta la información sensible en tablas de DynamoDB. Es necesario crear un secreto en AWS Secret Manager con la siguiente información:
-
-```bash
-aws secretsmanager create-secret --name "/tvo/security-scan/prod/aes_secret" --secret-string "my-secret-key" --region us-east-1
-```
-
-Luego necesitamos almacenar el ARN y el nombre del secreto en el SSM Parameter Store.
-
-```bash
-aws ssm put-parameter --name "/tvo/security-scan/prod/infra/encryption-key-name" --type "String" --value "tvo/security-scan/prod/aes_secret" --region us-east-1
-aws ssm put-parameter --name "/tvo/security-scan/prod/infra/secret-manager-arn" --type "String" --value "arn:aws:secretsmanager:us-east-1:123456789012:secret:tvo/security-scan/prod/aes_secret-a1b2c3" --region us-east-1
-```
-
-> [!IMPORTANT]
-> El prefijo de la ruta de parámetros se construye a partir de lo que está en el archivo `common.hcl` en la variable `project_name` y el `environment` que se está usando. Es importante mantener el nombre que viene después del prefijo para que el secreto se pueda usar en la aplicación.
-
-## Configuración
-
-1. Clona este repositorio:
    ```bash
-   git clone https://github.com/KaribuLab/titvo-security-scan-infra-aws
+   git clone https://github.com/KaribuLab/titvo-security-scan-infra-aws.git
    cd titvo-security-scan-infra-aws
    ```
 
-## Uso
+2. **Variables de entorno (opcional pero recomendado)** Crea un archivo `.env` con las variables mínimas:
 
-### Despliegue de Infraestructura
-
-Como paso opcional puedes crear un archivo `common_tags.json` en la raíz del proyecto con las etiquetas que quieres aplicar a todos los recursos.
-
-```json
-{
-  "Project": "Titvo Security Scan",
-  "Customer": "Titvo",
-  "Team": "Area Creacion"
-}
-```
-
-1. Configura las variables de entorno para AWS:
    ```bash
-   export AWS_ACCESS_KEY_ID="tu_access_key"
-   export AWS_SECRET_ACCESS_KEY="tu_secret_key"
-   export AWS_DEFAULT_REGION="us-east-1"
-   export PROJECT_NAME="titvo-security-scan" # Opcional si quiere mantener los valores por defecto. Esto se usará como prefijo para los recursos
-   export PARAMETER_PATH="/titvo/security-scan" # Opcional si quiere mantener los valores por defecto. Esto se usará como prefijo para los parámetros
-   export BUCKET_STATE_NAME="titvo-security-scan-terraform-state" # Opcional, si no se especifica se usará el nombre del proyecto. Por ejemplo: titvo-security-scan-terraform-state
+   AWS_ACCESS_KEY_ID="<tu_access_key>"
+   AWS_SECRET_ACCESS_KEY="<tu_secret_key>"
+   AWS_DEFAULT_REGION="us-east-1"
+   PROJECT_NAME="titvo-security-scan"      # Prefijo de recursos
+   PARAMETER_PATH="/titvo/security-scan"   # Prefijo de parámetros
+   BUCKET_STATE_NAME="titvo-security-scan-terraform-state"
    ```
-   
-   También puedes añadir estas variables a tu archivo `.env` (asegúrate de no incluirlo en el control de versiones):
-   ```bash
-   export AWS_ACCESS_KEY_ID="tu_access_key"
-   export AWS_SECRET_ACCESS_KEY="tu_secret_key"
-   export AWS_DEFAULT_REGION="us-east-1"
-   export PROJECT_NAME="titvo-security-scan" # Opcional si quiere mantener los valores por defecto. Esto se usará como prefijo para los recursos
-   export PARAMETER_PATH="/titvo/security-scan" # Esto se usará como prefijo para los parámetros
-   export BUCKET_STATE_NAME="titvo-security-scan-terraform-state" # Opcional, si no se especifica se usará el nombre del proyecto. Por ejemplo: titvo-security-scan-terraform-state
-   ```
-   
-   Y cargarlas con:
+
+   Luego:
+
    ```bash
    source .env
    ```
 
-   > [!IMPORTANT]
-   > Se recomienda usar la variable `BUCKET_STATE_NAME` para mantener el estado de la infraestructura, ya que estos son únicos y podrían haber conflictos si se usa el mismo nombre para diferentes proyectos.
+3. **Estado remoto de Terraform** Terragrunt crea un bucket S3 para guardar el estado con el nombre `BUCKET_STATE_NAME` si no existe.
 
-2. Ahora deberá crear todos los recursos sin incluir el API Gateway:
+4. **(Opcional) Etiquetas globales** Crea `common_tags.json` en la raíz para aplicar etiquetas a TODOS los recursos:
 
-    ```bash
-    cd prod/us-east-1
-    cwd=$(pwd)
-    cd $cwd/account/dynamo/apikey
-    terragrunt apply --terragrunt-non-interactive --auto-approve
-    cd $cwd/account/dynamo/repository
-    terragrunt apply --terragrunt-non-interactive --auto-approve
-    cd $cwd/account/dynamo/user
-    terragrunt apply --terragrunt-non-interactive --auto-approve
-    cd $cwd/parameter/dynamo/parameter
-    terragrunt apply --terragrunt-non-interactive --auto-approve
-    cd $cwd/s3/cli-files
-    terragrunt apply --terragrunt-non-interactive --auto-approve
-    cd $cwd/s3/reports
-    terragrunt apply --terragrunt-non-interactive --auto-approve
-    cd $cwd/task/dynamo/cli-files
-    terragrunt apply --terragrunt-non-interactive --auto-approve
-    cd $cwd/task/dynamo/task
-    terragrunt apply --terragrunt-non-interactive --auto-approve
-    cd $cwd/ssm
-    terragrunt apply --terragrunt-non-interactive --auto-approve
-    ```
+   ```json
+   { "Project": "Titvo Security Scan", "Team": "Área Creación", "Customer": "Titvo" }
+   ```
 
-3. Luego, debes desplegar Batch Job Definition y Job Queue (y otros recursos necesarios):
+---
 
-   - [titvo-security-scan](https://github.com/KaribuLab/titvo-security-scan)
+## Despliegue rápido
 
-4. Luego, deberá desplegar todas las funciones lambda:
+> Ideal para probar la plataforma en **menos de 10 min**.
 
-   - [titvo-auth-setup](https://github.com/KaribuLab/titvo-auth-setup)
-   - [titvo-task-cli-files](https://github.com/KaribuLab/titvo-task-cli-files)
-   - [titvo-task-trigger](https://github.com/KaribuLab/titvo-task-trigger)
-   - [titvo-task-status](https://github.com/KaribuLab/titvo-task-status)
+```bash
+# 1. Crear la VPC de ejemplo
+cd utils/prod/us-east-1/vpc
+terragrunt apply -auto-approve
 
-   > [!IMPORTANT]
-   > Cada repositorio tiene su propio README con instrucciones para desplegar la infraestructura.
+# 2. Desplegar el resto de la infraestructura (sin API Gateway)
+cd ../../../prod/us-east-1
+terragrunt run-all apply -exclude-dir task/apigateway -auto-approve
 
-5. Por último, deberá desplegar el API Gateway:
+# 3. Desplegar API Gateway
+cd task/apigateway
+terragrunt apply -auto-approve
+```
 
-  ```bash
-  cd prod/us-east-1
-  cwd=$(pwd)
-  cd $cwd/account/apigateway
-  terragrunt apply --terragrunt-non-interactive --auto-approve
-  cd $cwd/task/apigateway
-  terragrunt apply --terragrunt-non-interactive --auto-approve
-  ```
+> **Nota:** Cada comando puede tardar varios minutos según tu conexión y límites de AWS.
 
-### Destrucción de Infraestructura
+---
 
-Para destruir todos los recursos en un entorno específico:
+## Despliegue paso a paso
+
+### 1 ‑ Provisionar redes (VPC + subnets)
+
+Si ya tienes red, salta a [Paso 2](#2‑desplegar-componentes-base).
+
+```bash
+cd utils/prod/us-east-1/vpc
+terragrunt apply -auto-approve
+```
+
+Registra los IDs resultantes en Parameter Store:
+
+```bash
+aws ssm put-parameter --name "/tvo/security-scan/prod/infra/vpc-id" --type String --value "vpc-xxxxxxxx" --region us-east-1
+aws ssm put-parameter --name "/tvo/security-scan/prod/infra/subnet1" --type String --value "subnet-xxxxxxxx" --region us-east-1
+```
+
+### 2 ‑ Desplegar componentes base (DynamoDB, S3, parámetros, …)
+
+```bash
+cd prod/us-east-1
+cwd=$(pwd)
+for path in \
+  account/dynamo/apikey \
+  account/dynamo/repository \
+  account/dynamo/user \
+  parameter/dynamo/parameter \
+  s3/cli-files \
+  s3/reports \
+  task/dynamo/cli-files \
+  task/dynamo/task \
+  ssm
+ do
+   cd "$cwd/$path" && terragrunt apply -auto-approve
+ done
+```
+
+### 3 ‑ Crear secreto de cifrado (Secrets Manager)
+
+```bash
+aws secretsmanager create-secret \
+  --name "/tvo/security-scan/prod/aes_secret" \
+  --secret-string "<mi-clave-aes>" \
+  --region us-east-1
+
+aws ssm put-parameter --name "/tvo/security-scan/prod/infra/encryption-key-name" \
+  --type String --value "tvo/security-scan/prod/aes_secret" --region us-east-1
+```
+
+### 4 ‑ Desplegar AWS Batch y Lambda functions
+
+Cada función tiene su propio repositorio con instrucciones detalladas:
+
+* [https://github.com/KaribuLab/titvo-security-scan](https://github.com/KaribuLab/titvo-security-scan)
+* [https://github.com/KaribuLab/titvo-auth-setup](https://github.com/KaribuLab/titvo-auth-setup)
+* [https://github.com/KaribuLab/titvo-task-cli-files](https://github.com/KaribuLab/titvo-task-cli-files)
+* [https://github.com/KaribuLab/titvo-task-trigger](https://github.com/KaribuLab/titvo-task-trigger)
+* [https://github.com/KaribuLab/titvo-task-status](https://github.com/KaribuLab/titvo-task-status)
+
+### 5 ‑ Desplegar API Gateway
+
+```bash
+cd prod/us-east-1/account/apigateway && terragrunt apply -auto-approve
+cd ../task/apigateway              && terragrunt apply -auto-approve
+```
+
+---
+
+## Destrucción de la infraestructura
+
+> **Advertencia:** Elimina TODOS los recursos. Úsalo sólo en entornos de prueba.
 
 ```bash
 cd prod/us-east-1
 terragrunt run-all destroy
 ```
 
-## Entornos
+---
 
-El proyecto está configurado para soportar múltiples entornos:
+## Preguntas frecuentes
 
-- **prod**: Entorno de producción
+| Pregunta                                 | Respuesta breve                                                                                                                       |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **¿Terragrunt vs Terraform?**            | Terragrunt actúa como wrapper para reutilizar código, gestionar backends y evitar repetición.                                         |
+| **¿Necesito varias AWS CLI profiles?**   | No, mientras apuntes a la cuenta correcta. Para múltiples cuentas usa `AWS_PROFILE`.                                                  |
+| **¿Cuánto cuesta?**                      | DynamoDB (On‑Demand) + S3 (storage) + Lambda + Batch. En cuentas nuevas suele entrar en Free Tier, pero monitoriza con Cost Explorer. |
+| **Me falla un apply por límites de IAM** | Asegura tener permisos `AdministratorAccess` o los específicos listados en `module/iam-role`.                                         |
+| **¿Puedo desplegar en otra región?**     | Sí. Crea `prod/eu-west-1/` replicando la estructura y ajusta `aws_region`.                                                            |
 
-## Componentes Principales
+---
 
-- **DynamoDB**:
-  - **apikey**: Almacena las claves de API para la autenticación de clientes.
-  - **repository**: Almacena información sobre los repositorios escaneados.
-  - **user**: Gestiona los usuarios del sistema.
-  - **task**: Almacena las tareas de escaneo y sus estados.
-  - **cli-files**: Guarda información sobre los archivos de resultados del CLI.
+## Contribuir
 
-- **S3**:
-  - **cli-files**: Almacena los archivos subidos por el CLI de escaneo.
-  - **reports**: Almacena los informes generados de los escaneos.
+1. Crea tu rama: `git checkout -b feature/mi-nueva-feature`
+2. Realiza cambios y escribe pruebas si aplica
+3. `git commit -m "feat: añade mi nueva feature"`
+4. `git push origin feature/mi-nueva-feature`
+5. Abre un **Pull Request** y describe el *por qué* del cambio.
 
-- **IAM**:
-  - Roles y políticas para los distintos servicios y funciones Lambda.
+> Sigue el estilo de commit convencional (Conventional Commits) para un historial legible.
 
-- **API Gateway**: 
-  - Endpoints para interactuar con el sistema de escaneo.
-  - Rutas para la autenticación y operaciones de escaneo.
-
-- **Parameter Store**:
-  - Almacena parámetros de configuración y secretos.
-
-- **Lambda**:
-  - **auth-setup**: Gestiona la autenticación y configuración inicial.
-  - **task-cli-files**: Procesa los archivos subidos por el CLI.
-  - **task-trigger**: Inicia tareas de escaneo.
-  - **task-status**: Actualiza y consulta el estado de las tareas.
-
-- **Batch**:
-  - **Job Definition**: Define el trabajo a realizar.
-  - **Job Queue**: Cola de trabajos.
-
-## Contribución
-
-1. Crea una rama para tu característica (`git checkout -b feature/amazing-feature`)
-2. Realiza tus cambios
-3. Haz commit de tus cambios (`git commit -m 'Add some amazing feature'`)
-4. Sube tu rama (`git push origin feature/amazing-feature`)
-5. Abre un Pull Request
-
-## Contacto
-
-Equipo de Area Creación - Titvo 
+---
 
 ## Licencia
 
-Este proyecto está licenciado bajo los términos de la [Licencia Apache 2.0](LICENSE). Consulte el archivo LICENSE para más detalles. 
+Distribuido bajo la **Apache 2.0**. Lee el archivo [LICENSE](LICENSE) para más detalles.
+
+---
+
+### ¿Necesitas ayuda?
+
+Abre un *issue* o escribe a **Área Creación – Titvo**.
