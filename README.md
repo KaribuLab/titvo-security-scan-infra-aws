@@ -227,6 +227,14 @@ aws ssm put-parameter --name "/tvo/security-scan/prod/infra/encryption-key-name"
   --type String --value "tvo/security-scan/prod/aes_secret" --region us-east-1
 ```
 
+> [!IMPORTANT]
+> Asegúrate de que el secreto sea de 32 bytes (256 bits) y que se guarde en formato `base64`.
+> Ejemplo usando `openssl`:
+>
+> ```bash
+> openssl rand -base64 32
+> ```
+
 ### 4 ‑ Desplegar AWS Batch y Lambda functions
 
 Cada función tiene su propio repositorio con instrucciones detalladas:
