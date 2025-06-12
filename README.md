@@ -240,10 +240,10 @@ aws ssm put-parameter --name "/tvo/security-scan/prod/infra/encryption-key-name"
 Cada función tiene su propio repositorio con instrucciones detalladas:
 
 * [https://github.com/KaribuLab/titvo-security-scan](https://github.com/KaribuLab/titvo-security-scan)
-* [https://github.com/KaribuLab/titvo-auth-setup](https://github.com/KaribuLab/titvo-auth-setup)
-* [https://github.com/KaribuLab/titvo-task-cli-files](https://github.com/KaribuLab/titvo-task-cli-files)
-* [https://github.com/KaribuLab/titvo-task-trigger](https://github.com/KaribuLab/titvo-task-trigger)
-* [https://github.com/KaribuLab/titvo-task-status](https://github.com/KaribuLab/titvo-task-status)
+* [https://github.com/KaribuLab/titvo-auth-setup](https://github.com/KaribuLab/titvo-auth-setup-aws)
+* [https://github.com/KaribuLab/titvo-task-cli-files](https://github.com/KaribuLab/titvo-task-cli-files-aws)
+* [https://github.com/KaribuLab/titvo-task-trigger](https://github.com/KaribuLab/titvo-task-trigger-aws)
+* [https://github.com/KaribuLab/titvo-task-status](https://github.com/KaribuLab/titvo-task-status-aws)
 
 ### 5 ‑ Desplegar API Gateway
 
