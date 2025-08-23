@@ -12,16 +12,18 @@ locals {
 dependency "bucket-cli-files" {
   config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/s3/cli-files"
   mock_outputs = {
-    bucket_arn = "arn:aws:s3:::cli-files"
-    bucket_id  = "cli-files"
+    bucket_arn  = "arn:aws:s3:::cli-files"
+    bucket_id   = "cli-files"
+    bucket_name = "cli-files"
   }
 }
 
 dependency "bucket-reports" {
   config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/s3/reports"
   mock_outputs = {
-    bucket_arn = "arn:aws:s3:::reports"
-    bucket_id  = "reports"
+    bucket_arn  = "arn:aws:s3:::reports"
+    bucket_id   = "reports"
+    bucket_name = "reports"
   }
 }
 
