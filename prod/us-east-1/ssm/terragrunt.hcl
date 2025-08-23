@@ -11,30 +11,58 @@ locals {
 
 dependency "bucket-cli-files" {
   config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/s3/cli-files"
+  mock_outputs = {
+    bucket_arn = "arn:aws:s3:::cli-files"
+    bucket_id  = "cli-files"
+  }
 }
 
 dependency "bucket-reports" {
   config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/s3/reports"
+  mock_outputs = {
+    bucket_arn = "arn:aws:s3:::reports"
+    bucket_id  = "reports"
+  }
 }
 
 dependency "dynamo-api-key-table" {
   config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/account/dynamo/apikey"
+  mock_outputs = {
+    dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/apikey"
+    dynamodb_table_id  = "apikey"
+  }
 }
 
 dependency "dynamo-cli-files-table" {
   config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/task/dynamo/cli-files"
+  mock_outputs = {
+    dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/cli-files"
+    dynamodb_table_id  = "cli-files"
+  }
 }
 
 dependency "dynamo-parameter-table" {
   config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/parameter/dynamo/parameter"
+  mock_outputs = {
+    dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/parameter"
+    dynamodb_table_id  = "parameter"
+  }
 }
 
 dependency "dynamo-repository-table" {
   config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/account/dynamo/repository"
+  mock_outputs = {
+    dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/repository"
+    dynamodb_table_id  = "repository"
+  }
 }
 
 dependency "dynamo-task-table" {
   config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/task/dynamo/task"
+  mock_outputs = {
+    dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/task"
+    dynamodb_table_id  = "task"
+  }
 }
 
 include {
