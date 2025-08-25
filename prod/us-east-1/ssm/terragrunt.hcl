@@ -67,6 +67,22 @@ dependency "dynamo-task-table" {
   }
 }
 
+dependency "api-gateway-account" {
+  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/account/apigateway"
+  mock_outputs = {
+    api_gateway_id             = "api-gateway"
+    api_gateway_authorizer_ids = ["authorizer-id"]
+  }
+}
+
+dependency "api-gateway-task" {
+  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/task/apigateway"
+  mock_outputs = {
+    api_gateway_id             = "api-gateway"
+    api_gateway_authorizer_ids = ["authorizer-id"]
+  }
+}
+
 include {
   path = find_in_parent_folders()
 }
@@ -154,6 +170,26 @@ inputs = {
       name  = "report-bucket-name"
       type  = "String"
       value = dependency.bucket-reports.outputs.bucket_name
+    },
+    {
+      name  = "api-gateway-account-id"
+      type  = "String"
+      value = dependency.api-gateway-account.outputs.api_gateway_id
+    },
+    {
+      name  = "api-gateway-account-authorizer-ids"
+      type  = "String"
+      value = jsonencode(dependency.api-gateway-account.outputs.api_gateway_authorizer_ids)
+    },
+    {
+      name  = "api-gateway-task-id"
+      type  = "String"
+      value = dependency.api-gateway-task.outputs.api_gateway_id
+    },
+    {
+      name  = "api-gateway-task-authorizer-ids"
+      type  = "String"
+      value = jsonencode(dependency.api-gateway-task.outputs.api_gateway_authorizer_ids)
     }
   ]
 }
