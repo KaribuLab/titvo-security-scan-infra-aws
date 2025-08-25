@@ -1,5 +1,5 @@
 terraform {
-  source = "git::https://github.com/KaribuLab/terraform-aws-api-gateway.git?ref=v0.4.4"
+  source = "git::https://github.com/KaribuLab/terraform-aws-api-gateway.git?ref=v1.0.0"
 }
 
 locals {
@@ -17,14 +17,7 @@ include {
 }
 
 inputs = {
-  name       = local.api_gateway_name
-  stage_name = "v1"
-  routes = [
-    {
-      path          = "/auth/setup"
-      method        = "POST"
-      function_name = "${local.auth_setup_lambda_name}-${local.environment.locals.name}"
-    }
-  ]
+  name        = local.api_gateway_name
+  stage_name  = "v1"
   common_tags = local.common_tags
 }

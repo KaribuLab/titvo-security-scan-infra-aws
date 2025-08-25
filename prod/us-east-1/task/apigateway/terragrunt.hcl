@@ -1,5 +1,5 @@
 terraform {
-  source = "git::https://github.com/KaribuLab/terraform-aws-api-gateway.git?ref=v0.4.4"
+  source = "git::https://github.com/KaribuLab/terraform-aws-api-gateway.git?ref=?ref=v1.0.0"
 }
 
 locals {
@@ -19,24 +19,7 @@ include {
 }
 
 inputs = {
-  name       = local.api_gateway_name
-  stage_name = "v1"
-  routes = [
-    {
-      path          = "/run-scan"
-      method        = "POST"
-      function_name = "${local.task_trigger_lambda_name}-${local.environment.locals.name}"
-    },
-    {
-      path          = "/scan-status"
-      method        = "POST"
-      function_name = "${local.task_status_lambda_name}-${local.environment.locals.name}"
-    },
-    {
-      path          = "/cli-files"
-      method        = "POST"
-      function_name = "${local.task_cli_files_lambda_name}-${local.environment.locals.name}"
-    }
-  ]
+  name        = local.api_gateway_name
+  stage_name  = "v1"
   common_tags = local.common_tags
 }
