@@ -6,8 +6,6 @@ locals {
   dynamodb_table  = "${local.project_name}-tfstate-lock"
   tags_file_path  = "${get_terragrunt_dir()}/common_tags.json"
   tags = fileexists(local.tags_file_path) ? jsondecode(file(local.tags_file_path)) : {
-    Project  = "Titvo Security Scan"
-    Customer = "Titvo"
-    Team     = "Area Creacion"
+    Project = "Titvo Security Scan"
   }
 }
