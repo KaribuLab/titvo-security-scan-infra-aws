@@ -6,7 +6,7 @@ locals {
   common      = read_terragrunt_config(find_in_parent_folders("common.hcl"))
   environment = read_terragrunt_config(find_in_parent_folders("environment.hcl"))
   common_tags = local.common.locals.tags
-  bucket_name = "${local.common.locals.project_name}-reports-${local.environment.locals.name}${local.common.locals.use_bucket_uuid == "no" ? "" : "-${uuid()}"}"
+  bucket_name = "${local.common.locals.project_name}-reports-${local.environment.locals.name}${local.common.locals.bucket_suffix}"
 }
 
 include {
