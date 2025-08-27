@@ -164,13 +164,9 @@ Cada directorio `*/terragrunt.hcl` hereda de `common.hcl`, lo que evita duplicar
 cd utils/prod/us-east-1/vpc
 terragrunt apply -auto-approve
 
-# 2. Desplegar el resto de la infraestructura (sin API Gateway)
+# 2. Desplegar toda la infraestructura
 cd ../../../prod/us-east-1
-terragrunt run-all apply -exclude-dir task/apigateway -auto-approve
-
-# 3. Desplegar API Gateway
-cd task/apigateway
-terragrunt apply -auto-approve
+terragrunt run-all apply -auto-approve
 ```
 
 > **Nota:** Cada comando puede tardar varios minutos según tu conexión y límites de AWS.
@@ -251,6 +247,13 @@ Cada función tiene su propio repositorio con instrucciones detalladas:
 cd prod/us-east-1/account/apigateway && terragrunt apply -auto-approve
 cd ../task/apigateway              && terragrunt apply -auto-approve
 ```
+
+> **Nota:** Si prefieres desplegar toda la infraestructura de una vez, puedes usar:
+>
+> ```bash
+> cd prod/us-east-1
+> terragrunt run-all apply -auto-approve
+> ```
 
 ---
 
