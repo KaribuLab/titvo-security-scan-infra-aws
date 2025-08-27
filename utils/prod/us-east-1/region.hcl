@@ -1,3 +1,3 @@
 locals {
-  name = basename(get_terragrunt_dir())
+  name = get_env("AWS_REGION", basename(get_terragrunt_dir()))
 }
