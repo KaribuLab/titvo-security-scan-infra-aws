@@ -7,17 +7,9 @@ generate "provider" {
   path      = "provider.tf"
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
-  terraform {
-    required_providers {
-      aws = {
-        source  = "hashicorp/aws"
-        version = "${local.common.locals.provider_version}"
-      }
-    }
-  }
-  provider "aws" {
-    region = "${local.region.locals.name}"
-  }
+provider "aws" {
+  region = "${local.region.locals.name}"
+}
 EOF
 }
 
