@@ -7,12 +7,13 @@ terraform {
 }
 
 locals {
-  common      = read_terragrunt_config(find_in_parent_folders("common.hcl"))
-  environment = read_terragrunt_config(find_in_parent_folders("environment.hcl"))
-  region      = read_terragrunt_config(find_in_parent_folders("region.hcl"))
-  region_name = local.region.locals.name
-  common_tags = local.common.locals.tags
-  base_path   = "${local.common.locals.parameter_path}/${local.environment.locals.name}/infra"
+  common         = read_terragrunt_config(find_in_parent_folders("common.hcl"))
+  environment    = read_terragrunt_config(find_in_parent_folders("environment.hcl"))
+  region         = read_terragrunt_config(find_in_parent_folders("region.hcl"))
+  region_name    = local.region.locals.name
+  common_tags    = local.common.locals.tags
+  base_path      = "${local.common.locals.parameter_path}/${local.environment.locals.name}/infra"
+  base_directory = "${get_terragrunt_dir()}/../../.."
 }
 
 generate "provider" {
@@ -28,13 +29,13 @@ generate "provider" {
     }
   }
   provider "aws" {
-    region = "${local.region.locals.name}"
+    region = "${local.region_name}"
   }
 EOF
 }
 
 dependency "bucket-cli-files" {
-  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/s3/cli-files"
+  config_path = "${local.base_directory}/prod/us-east-1/s3/cli-files"
   mock_outputs = {
     bucket_arn  = "arn:aws:s3:::cli-files"
     bucket_id   = "cli-files"
@@ -43,7 +44,7 @@ dependency "bucket-cli-files" {
 }
 
 dependency "bucket-reports" {
-  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/s3/reports"
+  config_path = "${local.base_directory}/prod/us-east-1/s3/reports"
   mock_outputs = {
     bucket_arn            = "arn:aws:s3:::reports"
     bucket_name           = "reports"
@@ -52,7 +53,7 @@ dependency "bucket-reports" {
 }
 
 dependency "dynamo-api-key-table" {
-  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/account/dynamo/apikey"
+  config_path = "${local.base_directory}/prod/us-east-1/account/dynamo/apikey"
   mock_outputs = {
     dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/apikey"
     dynamodb_table_id  = "apikey"
@@ -60,7 +61,7 @@ dependency "dynamo-api-key-table" {
 }
 
 dependency "dynamo-cli-files-table" {
-  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/task/dynamo/cli-files"
+  config_path = "${local.base_directory}/prod/us-east-1/task/dynamo/cli-files"
   mock_outputs = {
     dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/cli-files"
     dynamodb_table_id  = "cli-files"
@@ -68,7 +69,7 @@ dependency "dynamo-cli-files-table" {
 }
 
 dependency "dynamo-parameter-table" {
-  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/parameter/dynamo/parameter"
+  config_path = "${local.base_directory}/prod/us-east-1/parameter/dynamo/parameter"
   mock_outputs = {
     dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/parameter"
     dynamodb_table_id  = "parameter"
@@ -76,7 +77,7 @@ dependency "dynamo-parameter-table" {
 }
 
 dependency "dynamo-repository-table" {
-  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/account/dynamo/repository"
+  config_path = "${local.base_directory}/prod/us-east-1/account/dynamo/repository"
   mock_outputs = {
     dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/repository"
     dynamodb_table_id  = "repository"
@@ -84,7 +85,7 @@ dependency "dynamo-repository-table" {
 }
 
 dependency "dynamo-task-table" {
-  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/task/dynamo/task"
+  config_path = "${local.base_directory}/prod/us-east-1/task/dynamo/task"
   mock_outputs = {
     dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/task"
     dynamodb_table_id  = "task"
@@ -92,7 +93,7 @@ dependency "dynamo-task-table" {
 }
 
 dependency "dynamo-user-table" {
-  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/account/dynamo/user"
+  config_path = "${local.base_directory}/prod/us-east-1/account/dynamo/user"
   mock_outputs = {
     dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/user"
     dynamodb_table_id  = "user"
@@ -100,7 +101,7 @@ dependency "dynamo-user-table" {
 }
 
 dependency "api-gateway-account" {
-  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/account/apigateway"
+  config_path = "${local.base_directory}/prod/us-east-1/account/apigateway"
   mock_outputs = {
     api_gateway_id             = "api-gateway"
     api_gateway_authorizer_ids = ["authorizer-id"]
@@ -108,7 +109,7 @@ dependency "api-gateway-account" {
 }
 
 dependency "api-gateway-task" {
-  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/task/apigateway"
+  config_path = "${local.base_directory}/prod/us-east-1/task/apigateway"
   mock_outputs = {
     api_gateway_id                = "api-gateway"
     api_gateway_authorizer_ids    = ["authorizer-id"]
