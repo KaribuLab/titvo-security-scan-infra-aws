@@ -46,9 +46,8 @@ dependency "bucket-cli-files" {
 dependency "bucket-reports" {
   config_path = "${local.base_directory}/prod/us-east-1/s3/reports"
   mock_outputs = {
-    bucket_arn            = "arn:aws:s3:::reports"
-    bucket_name           = "reports"
-    bucket_website_domain = "reports.s3-website.us-east-1.amazonaws.com"
+    bucket_arn  = "arn:aws:s3:::reports"
+    bucket_name = "reports"
   }
 }
 
@@ -245,7 +244,7 @@ inputs = {
     {
       name  = "report-bucket-website-domain"
       type  = "String"
-      value = dependency.bucket-reports.outputs.bucket_website_domain
+      value = "http://${dependency.bucket-reports.outputs.bucket_name}.s3-website.${local.region_name}.amazonaws.com"
     },
     {
       name  = "api-gateway-account-api-full-endpoint"
