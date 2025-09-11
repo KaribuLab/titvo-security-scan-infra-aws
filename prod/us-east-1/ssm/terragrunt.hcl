@@ -67,6 +67,14 @@ dependency "dynamo-task-table" {
   }
 }
 
+dependency "dynamo-user-table" {
+  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/account/dynamo/user"
+  mock_outputs = {
+    dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/user"
+    dynamodb_table_id  = "user"
+  }
+}
+
 dependency "api-gateway-account" {
   config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/account/apigateway"
   mock_outputs = {
@@ -145,6 +153,21 @@ inputs = {
       name  = "dynamo-hint-table-name"
       type  = "String"
       value = dependency.dynamo-repository-table.outputs.dynamodb_table_id
+    },
+    {
+      name  = "dynamo-hint-table-arn"
+      type  = "String"
+      value = dependency.dynamo-repository-table.outputs.dynamodb_table_arn
+    },
+    {
+      name  = "dynamo-user-table-name"
+      type  = "String"
+      value = dependency.dynamo-user-table.outputs.dynamodb_table_id
+    },
+    {
+      name  = "dynamo-user-table-arn"
+      type  = "String"
+      value = dependency.dynamo-user-table.outputs.dynamodb_table_arn
     },
     {
       name  = "dynamo-repository-table-arn"
