@@ -89,8 +89,9 @@ dependency "api-gateway-account" {
 dependency "api-gateway-task" {
   config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/task/apigateway"
   mock_outputs = {
-    api_gateway_id             = "api-gateway"
-    api_gateway_authorizer_ids = ["authorizer-id"]
+    api_gateway_id                = "api-gateway"
+    api_gateway_authorizer_ids    = ["authorizer-id"]
+    api_gateway_api_full_endpoint = "https://api-gateway.us-east-1.amazonaws.com/v1"
   }
 }
 
@@ -221,6 +222,11 @@ inputs = {
       name  = "api-gateway-task-authorizer-ids"
       type  = "String"
       value = jsonencode(dependency.api-gateway-task.outputs.api_gateway_authorizer_ids)
+    },
+    {
+      name  = "api-gateway-task-api-full-endpoint"
+      type  = "String"
+      value = dependency.api-gateway-task.outputs.api_gateway_api_full_endpoint
     }
   ]
 }
