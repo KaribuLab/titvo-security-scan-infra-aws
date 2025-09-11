@@ -103,8 +103,9 @@ dependency "dynamo-user-table" {
 dependency "api-gateway-account" {
   config_path = "${local.base_directory}/prod/us-east-1/account/apigateway"
   mock_outputs = {
-    api_gateway_id             = "api-gateway"
-    api_gateway_authorizer_ids = ["authorizer-id"]
+    api_gateway_id                = "api-gateway"
+    api_gateway_authorizer_ids    = ["authorizer-id"]
+    api_gateway_api_full_endpoint = "https://api-gateway.us-east-1.amazonaws.com/v1"
   }
 }
 
@@ -245,6 +246,11 @@ inputs = {
       name  = "report-bucket-website-domain"
       type  = "String"
       value = dependency.bucket-reports.outputs.bucket_website_domain
+    },
+    {
+      name  = "api-gateway-account-api-full-endpoint"
+      type  = "String"
+      value = dependency.api-gateway-account.outputs.api_gateway_api_full_endpoint
     },
   ]
 }
