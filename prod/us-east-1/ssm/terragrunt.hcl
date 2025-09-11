@@ -1,12 +1,36 @@
 terraform {
   source = "${get_parent_terragrunt_dir()}/module/ssm-parameter"
+  extra_arguments "disable_backend" {
+    commands  = ["init"]
+    arguments = ["-backend=false"]
+  }
 }
 
 locals {
   common      = read_terragrunt_config(find_in_parent_folders("common.hcl"))
   environment = read_terragrunt_config(find_in_parent_folders("environment.hcl"))
+  region      = read_terragrunt_config(find_in_parent_folders("region.hcl"))
+  region_name = local.region.locals.name
   common_tags = local.common.locals.tags
   base_path   = "${local.common.locals.parameter_path}/${local.environment.locals.name}/infra"
+}
+
+generate "provider" {
+  path      = "provider.tf"
+  if_exists = "overwrite_terragrunt"
+  contents  = <<EOF
+  terraform {
+    required_providers {
+      aws = {
+        source  = "hashicorp/aws"
+        version = "${local.common.locals.provider_version}"
+      }
+    }
+  }
+  provider "aws" {
+    region = "${local.region.locals.name}"
+  }
+EOF
 }
 
 dependency "bucket-cli-files" {
@@ -90,10 +114,6 @@ dependency "api-gateway-task" {
     api_gateway_authorizer_ids    = ["authorizer-id"]
     api_gateway_api_full_endpoint = "https://api-gateway.us-east-1.amazonaws.com/v1"
   }
-}
-
-include {
-  path = find_in_parent_folders()
 }
 
 inputs = {
