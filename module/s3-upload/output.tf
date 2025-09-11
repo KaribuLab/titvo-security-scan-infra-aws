@@ -16,4 +16,9 @@ output "bucket_domain_name" {
 output "bucket_regional_domain_name" {
   description = "Nombre de dominio regional del bucket S3 de subida"
   value       = aws_s3_bucket.upload_bucket.bucket_regional_domain_name
-} 
+}
+
+output "bucket_website_regional_domain" {
+  description = "Nombre de dominio regional del bucket S3 de subida"
+  value       = aws_s3_bucket.upload_bucket.website_regional_domain
+}
