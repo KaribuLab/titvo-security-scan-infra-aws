@@ -1,5 +1,5 @@
 terraform {
-  source = "${get_parent_terragrunt_dir()}/module/ssm-parameter"
+  source = "${local.base_directory}/module/ssm-parameter"
   extra_arguments "disable_backend" {
     commands  = ["init"]
     arguments = ["-backend=false"]
