@@ -156,21 +156,6 @@ inputs = {
       value = dependency.dynamo-repository-table.outputs.dynamodb_table_id
     },
     {
-      name  = "dynamo-hint-table-arn"
-      type  = "String"
-      value = dependency.dynamo-repository-table.outputs.dynamodb_table_arn
-    },
-    {
-      name  = "dynamo-user-table-name"
-      type  = "String"
-      value = dependency.dynamo-user-table.outputs.dynamodb_table_id
-    },
-    {
-      name  = "dynamo-user-table-arn"
-      type  = "String"
-      value = dependency.dynamo-user-table.outputs.dynamodb_table_arn
-    },
-    {
       name  = "dynamo-repository-table-arn"
       type  = "String"
       value = dependency.dynamo-repository-table.outputs.dynamodb_table_arn
@@ -196,11 +181,6 @@ inputs = {
       value = dependency.bucket-reports.outputs.bucket_name
     },
     {
-      name  = "report-bucket-website-domain"
-      type  = "String"
-      value = dependency.bucket-reports.outputs.bucket_website_domain
-    },
-    {
       name  = "api-gateway-account-id"
       type  = "String"
       value = dependency.api-gateway-account.outputs.api_gateway_id
@@ -224,6 +204,26 @@ inputs = {
       name  = "api-gateway-task-api-full-endpoint"
       type  = "String"
       value = dependency.api-gateway-task.outputs.api_gateway_api_full_endpoint
-    }
+    },
+    {
+      name  = "dynamo-hint-table-arn"
+      type  = "String"
+      value = dependency.dynamo-repository-table.outputs.dynamodb_table_arn
+    },
+    {
+      name  = "dynamo-user-table-name"
+      type  = "String"
+      value = dependency.dynamo-user-table.outputs.dynamodb_table_id
+    },
+    {
+      name  = "dynamo-user-table-arn"
+      type  = "String"
+      value = dependency.dynamo-user-table.outputs.dynamodb_table_arn
+    },
+    {
+      name  = "report-bucket-website-domain"
+      type  = "String"
+      value = dependency.bucket-reports.outputs.bucket_website_domain
+    },
   ]
 }
