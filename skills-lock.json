@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "ephemeral-worktree": {
+      "source": "KaribuLab/coding-agents",
+      "sourceType": "github",
+      "computedHash": "c957e38409d1bd018bd454027c7b244f052bf21dbe4ca122adce61fa741bd75e"
+    },
+    "terraform-module-library": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "06b1fc009e4a7d26160a6fa2838b43218f40f8ef481cd89714245d5a67244b6e"
+    }
+  }
+}
