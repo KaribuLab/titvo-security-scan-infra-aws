@@ -10,31 +10,35 @@ locals {
 }
 
 dependency "apikey" {
-  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/account/dynamo/apikey"
+  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/dynamo/apikey"
   mock_outputs = {
     dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/apikey"
   }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
 }
 
 dependency "repository" {
-  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/account/dynamo/repository"
+  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/dynamo/repository"
   mock_outputs = {
     dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/repository"
   }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
 }
 
 dependency "user" {
-  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/account/dynamo/user"
+  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/dynamo/user"
   mock_outputs = {
     dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/user"
   }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
 }
 
 dependency "session" {
-  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/account/dynamo/session"
+  config_path = "${get_parent_terragrunt_dir()}/prod/us-east-1/dynamo/session"
   mock_outputs = {
     dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/session"
   }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
 }
 
 include {
