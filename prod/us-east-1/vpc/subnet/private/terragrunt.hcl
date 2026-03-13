@@ -11,20 +11,6 @@ locals {
   common_tags = merge(local.common.locals.tags, {
     Name = local.subnet_name
   })
-  fallback_subnets = [
-    {
-      cidr_block        = "172.31.64.0/20"
-      availability_zone = "${local.region.locals.name}a"
-    },
-    {
-      cidr_block        = "172.31.80.0/20"
-      availability_zone = "${local.region.locals.name}b"
-    },
-    {
-      cidr_block        = "172.31.96.0/20"
-      availability_zone = "${local.region.locals.name}c"
-    }
-  ]
 }
 
 dependency "parameter" {
@@ -56,8 +42,8 @@ include {
 }
 
 inputs = {
-  vpc_id      = try(dependency.parameter.outputs.parameters["${local.base_path}/vpc/vpc_id"], dependency.parameter.outputs.parameters["${local.base_path}/vpc-id"], "vpc-000000000000000")
+  vpc_id      = dependency.parameter.outputs.parameters["${local.base_path}/vpc/vpc_id"]
   description = local.subnet_name
-  subnets     = try(jsondecode(dependency.parameter.outputs.parameters["${local.base_path}/vpc/subnets/private"]), local.fallback_subnets)
+  subnets     = jsondecode(dependency.parameter.outputs.parameters["${local.base_path}/vpc/subnets/private"])
   tags        = local.common_tags
 }
