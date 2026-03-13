@@ -109,6 +109,132 @@ dependency "eventbridge" {
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
 }
 
+dependency "s3_cli_files" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/s3/cli-files"
+  mock_outputs = {
+    bucket_arn = "arn:aws:s3:::test-bucket"
+    bucket_id  = "test-bucket"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
+dependency "s3_reports" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/s3/reports"
+  mock_outputs = {
+    bucket_arn       = "arn:aws:s3:::test-reports"
+    bucket_name      = "test-reports"
+    bucket_website_url = "http://test-reports.s3-website-us-east-1.amazonaws.com"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
+dependency "s3_git_commit_files" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/s3/git-commit-files"
+  mock_outputs = {
+    bucket_arn = "arn:aws:s3:::test-git-commit-files"
+    bucket_id  = "test-git-commit-files"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
+dependency "dynamo_apikey" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/dynamo/apikey"
+  mock_outputs = {
+    table_arn  = "arn:aws:dynamodb:us-east-1:000000000000:table/test-apikey"
+    table_name = "test-apikey"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
+dependency "dynamo_cli_files" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/dynamo/cli-files"
+  mock_outputs = {
+    table_arn  = "arn:aws:dynamodb:us-east-1:000000000000:table/test-cli-files"
+    table_name = "test-cli-files"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
+dependency "dynamo_jobs" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/dynamo/jobs"
+  mock_outputs = {
+    table_arn  = "arn:aws:dynamodb:us-east-1:000000000000:table/test-jobs"
+    table_name = "test-jobs"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
+dependency "dynamo_parameter" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/dynamo/parameter"
+  mock_outputs = {
+    table_arn  = "arn:aws:dynamodb:us-east-1:000000000000:table/test-parameter"
+    table_name = "test-parameter"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
+dependency "dynamo_prompt" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/dynamo/prompt"
+  mock_outputs = {
+    table_arn  = "arn:aws:dynamodb:us-east-1:000000000000:table/test-prompt"
+    table_name = "test-prompt"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
+dependency "dynamo_repository" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/dynamo/repository"
+  mock_outputs = {
+    table_arn  = "arn:aws:dynamodb:us-east-1:000000000000:table/test-repository"
+    table_name = "test-repository"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
+dependency "dynamo_scan" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/dynamo/scan"
+  mock_outputs = {
+    table_arn  = "arn:aws:dynamodb:us-east-1:000000000000:table/test-scan"
+    table_name = "test-scan"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
+dependency "dynamo_session" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/dynamo/session"
+  mock_outputs = {
+    table_arn  = "arn:aws:dynamodb:us-east-1:000000000000:table/test-session"
+    table_name = "test-session"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
+dependency "dynamo_task" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/dynamo/task"
+  mock_outputs = {
+    table_arn  = "arn:aws:dynamodb:us-east-1:000000000000:table/test-task"
+    table_name = "test-task"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
+dependency "dynamo_user" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/dynamo/user"
+  mock_outputs = {
+    table_arn  = "arn:aws:dynamodb:us-east-1:000000000000:table/test-user"
+    table_name = "test-user"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
+dependency "apigateway_task" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/apigateway/task"
+  mock_outputs = {
+    api_gateway_id = "abc123def456"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
 include {
   path = find_in_parent_folders()
 }
@@ -277,6 +403,202 @@ inputs = {
       type        = "String"
       tier        = "Standard"
       description = "EventBus name"
+    },
+    {
+      path        = "s3/cli-files/bucket_arn"
+      value       = dependency.s3_cli_files.outputs.bucket_arn
+      type        = "String"
+      tier        = "Standard"
+      description = "S3 CLI files bucket ARN"
+    },
+    {
+      path        = "s3/cli-files/bucket_name"
+      value       = dependency.s3_cli_files.outputs.bucket_id
+      type        = "String"
+      tier        = "Standard"
+      description = "S3 CLI files bucket name"
+    },
+    {
+      path        = "s3/reports/bucket_arn"
+      value       = dependency.s3_reports.outputs.bucket_arn
+      type        = "String"
+      tier        = "Standard"
+      description = "S3 reports bucket ARN"
+    },
+    {
+      path        = "s3/reports/bucket_name"
+      value       = dependency.s3_reports.outputs.bucket_name
+      type        = "String"
+      tier        = "Standard"
+      description = "S3 reports bucket name"
+    },
+    {
+      path        = "s3/reports/bucket_website_url"
+      value       = dependency.s3_reports.outputs.bucket_website_url
+      type        = "String"
+      tier        = "Standard"
+      description = "S3 reports bucket website URL"
+    },
+    {
+      path        = "s3/git-commit-files/bucket_arn"
+      value       = dependency.s3_git_commit_files.outputs.bucket_arn
+      type        = "String"
+      tier        = "Standard"
+      description = "S3 git-commit-files bucket ARN"
+    },
+    {
+      path        = "s3/git-commit-files/bucket_name"
+      value       = dependency.s3_git_commit_files.outputs.bucket_id
+      type        = "String"
+      tier        = "Standard"
+      description = "S3 git-commit-files bucket name"
+    },
+    {
+      path        = "dynamo/apikey-table-arn"
+      value       = dependency.dynamo_apikey.outputs.table_arn
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB apikey table ARN"
+    },
+    {
+      path        = "dynamo/apikey-table-name"
+      value       = dependency.dynamo_apikey.outputs.table_name
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB apikey table name"
+    },
+    {
+      path        = "dynamo/cli-files-table-arn"
+      value       = dependency.dynamo_cli_files.outputs.table_arn
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB cli-files table ARN"
+    },
+    {
+      path        = "dynamo/cli-files-table-name"
+      value       = dependency.dynamo_cli_files.outputs.table_name
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB cli-files table name"
+    },
+    {
+      path        = "dynamo/jobs-table-arn"
+      value       = dependency.dynamo_jobs.outputs.table_arn
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB jobs table ARN"
+    },
+    {
+      path        = "dynamo/jobs-table-name"
+      value       = dependency.dynamo_jobs.outputs.table_name
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB jobs table name"
+    },
+    {
+      path        = "dynamo/parameter-table-arn"
+      value       = dependency.dynamo_parameter.outputs.table_arn
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB parameter table ARN"
+    },
+    {
+      path        = "dynamo/parameter-table-name"
+      value       = dependency.dynamo_parameter.outputs.table_name
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB parameter table name"
+    },
+    {
+      path        = "dynamo/prompt-table-arn"
+      value       = dependency.dynamo_prompt.outputs.table_arn
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB prompt table ARN"
+    },
+    {
+      path        = "dynamo/prompt-table-name"
+      value       = dependency.dynamo_prompt.outputs.table_name
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB prompt table name"
+    },
+    {
+      path        = "dynamo/repository-table-arn"
+      value       = dependency.dynamo_repository.outputs.table_arn
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB repository table ARN"
+    },
+    {
+      path        = "dynamo/repository-table-name"
+      value       = dependency.dynamo_repository.outputs.table_name
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB repository table name"
+    },
+    {
+      path        = "dynamo/scan-table-arn"
+      value       = dependency.dynamo_scan.outputs.table_arn
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB scan table ARN"
+    },
+    {
+      path        = "dynamo/scan-table-name"
+      value       = dependency.dynamo_scan.outputs.table_name
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB scan table name"
+    },
+    {
+      path        = "dynamo/session-table-arn"
+      value       = dependency.dynamo_session.outputs.table_arn
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB session table ARN"
+    },
+    {
+      path        = "dynamo/session-table-name"
+      value       = dependency.dynamo_session.outputs.table_name
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB session table name"
+    },
+    {
+      path        = "dynamo/task-table-arn"
+      value       = dependency.dynamo_task.outputs.table_arn
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB task table ARN"
+    },
+    {
+      path        = "dynamo/task-table-name"
+      value       = dependency.dynamo_task.outputs.table_name
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB task table name"
+    },
+    {
+      path        = "dynamo/user-table-arn"
+      value       = dependency.dynamo_user.outputs.table_arn
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB user table ARN"
+    },
+    {
+      path        = "dynamo/user-table-name"
+      value       = dependency.dynamo_user.outputs.table_name
+      type        = "String"
+      tier        = "Standard"
+      description = "DynamoDB user table name"
+    },
+    {
+      path        = "apigateway/task/api_gateway_id"
+      value       = dependency.apigateway_task.outputs.api_gateway_id
+      type        = "String"
+      tier        = "Standard"
+      description = "API Gateway task ID"
     }
   ]
 }
