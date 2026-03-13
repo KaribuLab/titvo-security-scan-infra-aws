@@ -1,5 +1,5 @@
 terraform {
-  source = "git::https://github.com/KaribuLab/terraform-aws-eventbridge-sqs.git?ref=v0.3.0"
+  source = "git::https://github.com/KaribuLab/terraform-aws-eventbridge-sqs.git?ref=v0.3.1"
 }
 
 locals {
