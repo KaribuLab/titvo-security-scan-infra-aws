@@ -7,5 +7,5 @@ output "bucket_arn" {
 }
 
 output "bucket_website_url" {
-  value = aws_s3_bucket_website_configuration.static_bucket.website_url
+  value = "http://${aws_s3_bucket_website_configuration.static_bucket.website_endpoint}"
 }
