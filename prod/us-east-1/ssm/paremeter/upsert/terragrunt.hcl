@@ -19,28 +19,8 @@ dependency "bitbucket_code_insights_input" {
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
 }
 
-dependency "bitbucket_code_insights_output" {
-  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/sqs/bitbucket-code-insights/output"
-  mock_outputs = {
-    queue_arn  = "arn:aws:sqs:us-east-1:601238391153:test"
-    queue_url  = "https://sqs.us-east-1.amazonaws.com/601238391153/test"
-    queue_name = "test"
-  }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-}
-
 dependency "git_commit_files_input" {
   config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/sqs/git-commit-files/input"
-  mock_outputs = {
-    queue_arn  = "arn:aws:sqs:us-east-1:601238391153:test"
-    queue_url  = "https://sqs.us-east-1.amazonaws.com/601238391153/test"
-    queue_name = "test"
-  }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-}
-
-dependency "git_commit_files_output" {
-  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/sqs/git-commit-files/output"
   mock_outputs = {
     queue_arn  = "arn:aws:sqs:us-east-1:601238391153:test"
     queue_url  = "https://sqs.us-east-1.amazonaws.com/601238391153/test"
@@ -59,16 +39,6 @@ dependency "github_issue_input" {
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
 }
 
-dependency "github_issue_output" {
-  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/sqs/github-issue/output"
-  mock_outputs = {
-    queue_arn  = "arn:aws:sqs:us-east-1:601238391153:test"
-    queue_url  = "https://sqs.us-east-1.amazonaws.com/601238391153/test"
-    queue_name = "test"
-  }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-}
-
 dependency "issue_report_input" {
   config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/sqs/issue-report/input"
   mock_outputs = {
@@ -79,8 +49,8 @@ dependency "issue_report_input" {
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
 }
 
-dependency "issue_report_output" {
-  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/sqs/issue-report/output"
+dependency "gateway_output" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/sqs/gateway/output"
   mock_outputs = {
     queue_arn  = "arn:aws:sqs:us-east-1:601238391153:test"
     queue_url  = "https://sqs.us-east-1.amazonaws.com/601238391153/test"
@@ -148,172 +118,109 @@ inputs = {
   binary_version = "v0.5.6"
   parameters = [
     {
-      path        = "sqs/bitbucket-code-insights/input/queue_arn"
+      path        = "sqs/mcp/bitbucket-code-insights/input/queue_arn"
       value       = dependency.bitbucket_code_insights_input.outputs.queue_arn
       type        = "String"
       tier        = "Standard"
       description = "SQS queue ARN for bitbucket-code-insights input"
     },
     {
-      path        = "sqs/bitbucket-code-insights/input/queue_name"
+      path        = "sqs/mcp/bitbucket-code-insights/input/queue_name"
       value       = dependency.bitbucket_code_insights_input.outputs.queue_name
       type        = "String"
       tier        = "Standard"
       description = "SQS queue name for bitbucket-code-insights input"
     },
     {
-      path        = "sqs/bitbucket-code-insights/input/queue_url"
+      path        = "sqs/mcp/bitbucket-code-insights/input/queue_url"
       value       = dependency.bitbucket_code_insights_input.outputs.queue_url
       type        = "String"
       tier        = "Standard"
       description = "SQS queue url for bitbucket-code-insights input"
     },
     {
-      path        = "sqs/bitbucket-code-insights/output/queue_arn"
-      value       = dependency.bitbucket_code_insights_output.outputs.queue_arn
-      type        = "String"
-      tier        = "Standard"
-      description = "SQS queue ARN for bitbucket-code-insights output"
-    },
-    {
-      path        = "sqs/bitbucket-code-insights/output/queue_name"
-      value       = dependency.bitbucket_code_insights_output.outputs.queue_name
-      type        = "String"
-      tier        = "Standard"
-      description = "SQS queue name for bitbucket-code-insights output"
-    },
-    {
-      path        = "sqs/bitbucket-code-insights/output/queue_url"
-      value       = dependency.bitbucket_code_insights_output.outputs.queue_url
-      type        = "String"
-      tier        = "Standard"
-      description = "SQS queue url for bitbucket-code-insights output"
-    },
-    {
-      path        = "sqs/git-commit-files/input/queue_arn"
+      path        = "sqs/mcp/git-commit-files/input/queue_arn"
       value       = dependency.git_commit_files_input.outputs.queue_arn
       type        = "String"
       tier        = "Standard"
       description = "SQS queue ARN for git-commit-files input"
     },
     {
-      path        = "sqs/git-commit-files/input/queue_name"
+      path        = "sqs/mcp/git-commit-files/input/queue_name"
       value       = dependency.git_commit_files_input.outputs.queue_name
       type        = "String"
       tier        = "Standard"
       description = "SQS queue name for git-commit-files input"
     },
     {
-      path        = "sqs/git-commit-files/input/queue_url"
+      path        = "sqs/mcp/git-commit-files/input/queue_url"
       value       = dependency.git_commit_files_input.outputs.queue_url
       type        = "String"
       tier        = "Standard"
       description = "SQS queue url for git-commit-files input"
     },
     {
-      path        = "sqs/git-commit-files/output/queue_arn"
-      value       = dependency.git_commit_files_output.outputs.queue_arn
-      type        = "String"
-      tier        = "Standard"
-      description = "SQS queue ARN for git-commit-files output"
-    },
-    {
-      path        = "sqs/git-commit-files/output/queue_name"
-      value       = dependency.git_commit_files_output.outputs.queue_name
-      type        = "String"
-      tier        = "Standard"
-      description = "SQS queue name for git-commit-files output"
-    },
-    {
-      path        = "sqs/git-commit-files/output/queue_url"
-      value       = dependency.git_commit_files_output.outputs.queue_url
-      type        = "String"
-      tier        = "Standard"
-      description = "SQS queue url for git-commit-files output"
-    },
-    {
-      path        = "sqs/github-issue/input/queue_arn"
+      path        = "sqs/mcp/github-issue/input/queue_arn"
       value       = dependency.github_issue_input.outputs.queue_arn
       type        = "String"
       tier        = "Standard"
       description = "SQS queue ARN for github-issue input"
     },
     {
-      path        = "sqs/github-issue/input/queue_name"
+      path        = "sqs/mcp/github-issue/input/queue_name"
       value       = dependency.github_issue_input.outputs.queue_name
       type        = "String"
       tier        = "Standard"
       description = "SQS queue name for github-issue input"
     },
     {
-      path        = "sqs/github-issue/input/queue_url"
+      path        = "sqs/mcp/github-issue/input/queue_url"
       value       = dependency.github_issue_input.outputs.queue_url
       type        = "String"
       tier        = "Standard"
       description = "SQS queue url for github-issue input"
     },
     {
-      path        = "sqs/github-issue/output/queue_arn"
-      value       = dependency.github_issue_output.outputs.queue_arn
-      type        = "String"
-      tier        = "Standard"
-      description = "SQS queue ARN for github-issue output"
-    },
-    {
-      path        = "sqs/github-issue/output/queue_name"
-      value       = dependency.github_issue_output.outputs.queue_name
-      type        = "String"
-      tier        = "Standard"
-      description = "SQS queue name for github-issue output"
-    },
-    {
-      path        = "sqs/github-issue/output/queue_url"
-      value       = dependency.github_issue_output.outputs.queue_url
-      type        = "String"
-      tier        = "Standard"
-      description = "SQS queue url for github-issue output"
-    },
-    {
-      path        = "sqs/issue-report/input/queue_arn"
+      path        = "sqs/mcp/issue-report/input/queue_arn"
       value       = dependency.issue_report_input.outputs.queue_arn
       type        = "String"
       tier        = "Standard"
       description = "SQS queue ARN for issue-report input"
     },
     {
-      path        = "sqs/issue-report/input/queue_name"
+      path        = "sqs/mcp/issue-report/input/queue_name"
       value       = dependency.issue_report_input.outputs.queue_name
       type        = "String"
       tier        = "Standard"
       description = "SQS queue name for issue-report input"
     },
     {
-      path        = "sqs/issue-report/input/queue_url"
+      path        = "sqs/mcp/issue-report/input/queue_url"
       value       = dependency.issue_report_input.outputs.queue_url
       type        = "String"
       tier        = "Standard"
       description = "SQS queue url for issue-report input"
     },
     {
-      path        = "sqs/issue-report/output/queue_arn"
-      value       = dependency.issue_report_output.outputs.queue_arn
+      path        = "sqs/mcp/gateway/output/queue_arn"
+      value       = dependency.gateway_output.outputs.queue_arn
       type        = "String"
       tier        = "Standard"
-      description = "SQS queue ARN for issue-report output"
+      description = "SQS queue ARN for gateway output"
     },
     {
-      path        = "sqs/issue-report/output/queue_name"
-      value       = dependency.issue_report_output.outputs.queue_name
+      path        = "sqs/mcp/gateway/output/queue_name"
+      value       = dependency.gateway_output.outputs.queue_name
       type        = "String"
       tier        = "Standard"
-      description = "SQS queue name for issue-report output"
+      description = "SQS queue name for gateway output"
     },
     {
-      path        = "sqs/issue-report/output/queue_url"
-      value       = dependency.issue_report_output.outputs.queue_url
+      path        = "sqs/mcp/gateway/output/queue_url"
+      value       = dependency.gateway_output.outputs.queue_url
       type        = "String"
       tier        = "Standard"
-      description = "SQS queue url for issue-report output"
+      description = "SQS queue url for gateway output"
     },
     {
       path        = "ecs/cluster_name"

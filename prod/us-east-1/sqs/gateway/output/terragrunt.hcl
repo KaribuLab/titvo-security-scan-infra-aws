@@ -6,7 +6,7 @@ locals {
   common          = read_terragrunt_config(find_in_parent_folders("common.hcl"))
   environment     = read_terragrunt_config(find_in_parent_folders("environment.hcl"))
   customer_prefix = local.common.locals.project_prefix
-  queue_name      = "${local.customer_prefix}-github-issue-output-${local.environment.locals.name}"
+  queue_name      = "${local.customer_prefix}-mcp-gateway-output-${local.environment.locals.name}"
   common_tags = merge(local.common.locals.tags, {
     Name = local.queue_name
   })

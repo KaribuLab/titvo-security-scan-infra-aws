@@ -22,26 +22,8 @@ dependency "bitbucket_code_insights_input" {
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
 }
 
-dependency "bitbucket_code_insights_output" {
-  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/sqs/bitbucket-code-insights/output"
-  mock_outputs = {
-    queue_arn = "arn:aws:sqs:us-east-1:601238391153:test"
-    queue_url = "https://sqs.us-east-1.amazonaws.com/601238391153/test"
-  }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-}
-
 dependency "git_commit_files_input" {
   config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/sqs/git-commit-files/input"
-  mock_outputs = {
-    queue_arn = "arn:aws:sqs:us-east-1:601238391153:test"
-    queue_url = "https://sqs.us-east-1.amazonaws.com/601238391153/test"
-  }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-}
-
-dependency "git_commit_files_output" {
-  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/sqs/git-commit-files/output"
   mock_outputs = {
     queue_arn = "arn:aws:sqs:us-east-1:601238391153:test"
     queue_url = "https://sqs.us-east-1.amazonaws.com/601238391153/test"
@@ -58,15 +40,6 @@ dependency "github_issue_input" {
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
 }
 
-dependency "github_issue_output" {
-  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/sqs/github-issue/output"
-  mock_outputs = {
-    queue_arn = "arn:aws:sqs:us-east-1:601238391153:test"
-    queue_url = "https://sqs.us-east-1.amazonaws.com/601238391153/test"
-  }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-}
-
 dependency "issue_report_input" {
   config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/sqs/issue-report/input"
   mock_outputs = {
@@ -76,8 +49,8 @@ dependency "issue_report_input" {
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
 }
 
-dependency "issue_report_output" {
-  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/sqs/issue-report/output"
+dependency "gateway_output" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/sqs/gateway/output"
   mock_outputs = {
     queue_arn = "arn:aws:sqs:us-east-1:601238391153:test"
     queue_url = "https://sqs.us-east-1.amazonaws.com/601238391153/test"
@@ -93,7 +66,7 @@ inputs = {
   eventbus_name = local.eventbus_name
   rules = [
     {
-      name        = "bitbucket-code-insights-input"
+      name        = "mcp-bitbucket-code-insights-input"
       description = "Send bitbucket code insights input events to sqs"
       event_pattern = jsonencode({
         source      = ["mcp.tool.bitbucket.code-insights"]
@@ -103,7 +76,7 @@ inputs = {
       sqs_queue_url = dependency.bitbucket_code_insights_input.outputs.queue_url
     },
     {
-      name        = "git-commit-files-input"
+      name        = "mcp-git-commit-files-input"
       description = "Send git commit files input events to sqs"
       event_pattern = jsonencode({
         source      = ["mcp.tool.git.commit-files"]
@@ -113,7 +86,7 @@ inputs = {
       sqs_queue_url = dependency.git_commit_files_input.outputs.queue_url
     },
     {
-      name        = "issue-report-input"
+      name        = "mcp-issue-report-input"
       description = "Send issue report input events to sqs"
       event_pattern = jsonencode({
         source      = ["mcp.tool.issue-report"]
@@ -123,7 +96,7 @@ inputs = {
       sqs_queue_url = dependency.issue_report_input.outputs.queue_url
     },
     {
-      name        = "github-issue-input"
+      name        = "mcp-github-issue-input"
       description = "Send github issue input events to sqs"
       event_pattern = jsonencode({
         source      = ["mcp.tool.github-issue"]
@@ -133,44 +106,44 @@ inputs = {
       sqs_queue_url = dependency.github_issue_input.outputs.queue_url
     },
     {
-      name        = "bitbucket-code-insights-output"
+      name        = "mcp-bitbucket-code-insights-output"
       description = "Send bitbucket code insights output events to sqs"
       event_pattern = jsonencode({
         source      = ["mcp.tool.bitbucket.code-insights"]
         detail-type = ["output"]
       })
-      sqs_queue_arn = dependency.bitbucket_code_insights_output.outputs.queue_arn
-      sqs_queue_url = dependency.bitbucket_code_insights_output.outputs.queue_url
+      sqs_queue_arn = dependency.gateway_output.outputs.queue_arn
+      sqs_queue_url = dependency.gateway_output.outputs.queue_url
     },
     {
-      name        = "git-commit-files-output"
+      name        = "mcp-git-commit-files-output"
       description = "Send git commit files output events to sqs"
       event_pattern = jsonencode({
         source      = ["mcp.tool.git.commit-files"]
         detail-type = ["output"]
       })
-      sqs_queue_arn = dependency.git_commit_files_output.outputs.queue_arn
-      sqs_queue_url = dependency.git_commit_files_output.outputs.queue_url
+      sqs_queue_arn = dependency.gateway_output.outputs.queue_arn
+      sqs_queue_url = dependency.gateway_output.outputs.queue_url
     },
     {
-      name        = "issue-report-output"
+      name        = "mcp-issue-report-output"
       description = "Send issue report output events to sqs"
       event_pattern = jsonencode({
         source      = ["mcp.tool.issue-report"]
         detail-type = ["output"]
       })
-      sqs_queue_arn = dependency.issue_report_output.outputs.queue_arn
-      sqs_queue_url = dependency.issue_report_output.outputs.queue_url
+      sqs_queue_arn = dependency.gateway_output.outputs.queue_arn
+      sqs_queue_url = dependency.gateway_output.outputs.queue_url
     },
     {
-      name        = "github-issue-output"
+      name        = "mcp-github-issue-output"
       description = "Send github issue output events to sqs"
       event_pattern = jsonencode({
         source      = ["mcp.tool.github-issue"]
         detail-type = ["output"]
       })
-      sqs_queue_arn = dependency.github_issue_output.outputs.queue_arn
-      sqs_queue_url = dependency.github_issue_output.outputs.queue_url
+      sqs_queue_arn = dependency.gateway_output.outputs.queue_arn
+      sqs_queue_url = dependency.gateway_output.outputs.queue_url
     }
   ]
   tags = local.common_tags
