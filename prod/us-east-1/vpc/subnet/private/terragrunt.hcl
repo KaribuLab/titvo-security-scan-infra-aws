@@ -14,15 +14,15 @@ locals {
   fallback_subnets = [
     {
       cidr_block        = "172.31.64.0/20"
-      availability_zone = "us-east-1a"
+      availability_zone = "${local.region.name}a"
     },
     {
       cidr_block        = "172.31.80.0/20"
-      availability_zone = "us-east-1b"
+      availability_zone = "${local.region.name}b"
     },
     {
       cidr_block        = "172.31.96.0/20"
-      availability_zone = "us-east-1c"
+      availability_zone = "${local.region.name}c"
     }
   ]
 }
@@ -35,15 +35,15 @@ dependency "parameter" {
       "${local.base_path}/vpc/subnets/private" = jsonencode([
         {
           cidr_block        = "172.31.64.0/20"
-          availability_zone = "us-east-1a"
+          availability_zone = "${local.region.name}a"
         },
         {
           cidr_block        = "172.31.80.0/20"
-          availability_zone = "us-east-1b"
+          availability_zone = "${local.region.name}b"
         },
         {
           cidr_block        = "172.31.96.0/20"
-          availability_zone = "us-east-1c"
+          availability_zone = "${local.region.name}c"
         }
       ])
     }
