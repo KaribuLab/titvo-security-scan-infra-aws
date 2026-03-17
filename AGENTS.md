@@ -25,7 +25,5 @@ Agents must follow the rules defined in the `rules/` directory.
 
 ## Mandatory Rules
 
-- rules/ephemeral-worktrees.md
-- rules/checkpoint.md
 - rules/commit-style.md
 - rules/terragrunt/validation-and-formatting.md
