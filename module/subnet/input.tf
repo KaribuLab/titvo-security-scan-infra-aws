@@ -12,6 +12,7 @@ variable "subnets" {
   type = list(object({
     cidr_block        = string
     availability_zone = string
+    nat_gateway_id    = string
   }))
   description = "The subnets for the VPC"
 }

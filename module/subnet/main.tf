@@ -12,32 +12,12 @@ resource "aws_subnet" "private" {
   tags              = var.tags
 }
 
-resource "aws_eip" "nat_ip" {
-  count  = length(var.subnets)
-  domain = "vpc"
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.description} EIP ${var.subnets[count.index].availability_zone}"
-    }
-  )
-}
-
-resource "aws_nat_gateway" "gateway" {
-  count         = length(var.subnets)
-  allocation_id = aws_eip.nat_ip[count.index].id
-  subnet_id     = aws_subnet.private[count.index].id
-  tags = merge(var.tags, {
-    Name = "${var.description} NAT Gateway ${var.subnets[count.index].availability_zone}"
-  })
-}
-
 resource "aws_route_table" "private" {
   count  = length(var.subnets)
   vpc_id = data.aws_vpc.vpc.id
   route {
-    cidr_block     = var.subnets[count.index].cidr_block
-    nat_gateway_id = aws_nat_gateway.gateway[count.index].id
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = var.subnets[count.index].nat_gateway_id
   }
   tags = merge(
     var.tags,

@@ -22,14 +22,17 @@ dependency "parameter" {
         {
           cidr_block        = "172.31.64.0/20"
           availability_zone = "${local.region.locals.name}a"
+          nat_gateway_id    = "nat-00000000000000001"
         },
         {
           cidr_block        = "172.31.80.0/20"
           availability_zone = "${local.region.locals.name}b"
+          nat_gateway_id    = "nat-00000000000000002"
         },
         {
           cidr_block        = "172.31.96.0/20"
           availability_zone = "${local.region.locals.name}c"
+          nat_gateway_id    = "nat-00000000000000003"
         }
       ])
     }
