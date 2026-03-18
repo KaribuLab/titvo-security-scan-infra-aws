@@ -356,7 +356,7 @@ inputs = {
       description = "ECS cluster name"
     },
     {
-      path        = "vpc/subnet/private/subnets_id"
+      path        = "vpc/subnets/private"
       value       = jsonencode(dependency.subnet.outputs.subnets_id)
       type        = "String"
       tier        = "Standard"
