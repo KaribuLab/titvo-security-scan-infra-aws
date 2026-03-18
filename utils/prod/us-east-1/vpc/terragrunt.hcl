@@ -21,10 +21,6 @@ inputs = {
     subnets = [{
       az   = "${local.region.locals.name}a"
       cidr = "10.0.0.0/24"
-      },
-      {
-        az   = "${local.region.locals.name}b"
-        cidr = "10.0.1.0/24"
       }
     ]
   }
@@ -33,10 +29,6 @@ inputs = {
     subnets = [{
       az   = "${local.region.locals.name}a"
       cidr = "10.0.6.0/24"
-      },
-      {
-        az   = "${local.region.locals.name}b"
-        cidr = "10.0.7.0/24"
       }
     ]
   }

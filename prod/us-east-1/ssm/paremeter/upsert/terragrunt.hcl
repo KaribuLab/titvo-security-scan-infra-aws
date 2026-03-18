@@ -121,8 +121,8 @@ dependency "s3_cli_files" {
 dependency "s3_reports" {
   config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/s3/reports"
   mock_outputs = {
-    bucket_arn         = "arn:aws:s3:::test-reports"
-    bucket_name        = "test-reports"
+    bucket_arn       = "arn:aws:s3:::test-reports"
+    bucket_name      = "test-reports"
     bucket_website_url = "http://test-reports.s3-website-us-east-1.amazonaws.com"
   }
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
@@ -356,18 +356,11 @@ inputs = {
       description = "ECS cluster name"
     },
     {
-      path        = "vpc/subnet/private/subnets_id"
+      path        = "vpc/subnets/private"
       value       = jsonencode(dependency.subnet.outputs.subnets_id)
       type        = "String"
       tier        = "Standard"
       description = "Private subnets IDs"
-    },
-    {
-      path        = "vpc/subnet/private/routes_table_id"
-      value       = jsonencode(dependency.subnet.outputs.route_table_id)
-      type        = "String"
-      tier        = "Standard"
-      description = "Private route table IDs"
     },
     {
       path        = "vpc/security-group/security_group_id"

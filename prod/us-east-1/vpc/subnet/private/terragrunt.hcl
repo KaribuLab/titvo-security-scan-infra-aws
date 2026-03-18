@@ -18,7 +18,7 @@ dependency "parameter" {
   mock_outputs = {
     parameters = {
       "${local.base_path}/vpc/vpc_id" = "vpc-000000000000000"
-      "${local.base_path}/vpc/subnets/private" = jsonencode([
+      "${local.base_path}/vpc/installer/subnets/private" = jsonencode([
         {
           cidr_block        = "172.31.64.0/20"
           availability_zone = "${local.region.locals.name}a"
