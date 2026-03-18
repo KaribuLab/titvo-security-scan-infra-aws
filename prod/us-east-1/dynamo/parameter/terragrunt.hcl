@@ -6,7 +6,7 @@ locals {
   common      = read_terragrunt_config(find_in_parent_folders("common.hcl"))
   environment = read_terragrunt_config(find_in_parent_folders("environment.hcl"))
   common_tags = local.common.locals.tags
-  name        = "${local.common.locals.project_name}-configuration-${local.environment.locals.name}"
+  name        = "${local.common.locals.project_name}-parameter-${local.environment.locals.name}"
   hash_key    = "parameter_id"
 
   attributes = [
