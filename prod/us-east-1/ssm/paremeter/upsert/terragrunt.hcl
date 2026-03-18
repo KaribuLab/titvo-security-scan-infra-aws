@@ -230,7 +230,17 @@ dependency "dynamo_user" {
 dependency "apigateway_task" {
   config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/apigateway/task"
   mock_outputs = {
-    api_gateway_id = "abc123def456"
+    api_gateway_id                = "abc123def456"
+    api_gateway_api_full_endpoint = "https://abc123def456.execute-api.us-east-1.amazonaws.com/v1"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
+dependency "apigateway_account" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/apigateway/account"
+  mock_outputs = {
+    api_gateway_id                = "xyz789ghi012"
+    api_gateway_api_full_endpoint = "https://xyz789ghi012.execute-api.us-east-1.amazonaws.com/v1"
   }
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
 }
@@ -592,6 +602,27 @@ inputs = {
       type        = "String"
       tier        = "Standard"
       description = "API Gateway task ID"
+    },
+    {
+      path        = "apigateway/task/api_gateway_api_full_endpoint"
+      value       = dependency.apigateway_task.outputs.api_gateway_api_full_endpoint
+      type        = "String"
+      tier        = "Standard"
+      description = "API Gateway task full endpoint URL"
+    },
+    {
+      path        = "apigateway/account/api_gateway_id"
+      value       = dependency.apigateway_account.outputs.api_gateway_id
+      type        = "String"
+      tier        = "Standard"
+      description = "API Gateway account ID"
+    },
+    {
+      path        = "apigateway/account/api_gateway_api_full_endpoint"
+      value       = dependency.apigateway_account.outputs.api_gateway_api_full_endpoint
+      type        = "String"
+      tier        = "Standard"
+      description = "API Gateway account full endpoint URL"
     }
   ]
 }
