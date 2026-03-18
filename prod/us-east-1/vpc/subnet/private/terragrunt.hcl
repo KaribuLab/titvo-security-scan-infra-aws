@@ -47,6 +47,6 @@ include {
 inputs = {
   vpc_id      = dependency.parameter.outputs.parameters["${local.base_path}/vpc/vpc_id"]
   description = local.subnet_name
-  subnets     = jsondecode(dependency.parameter.outputs.parameters["${local.base_path}/vpc/subnets/private"])
+  subnets     = jsondecode(dependency.parameter.outputs.parameters["${local.base_path}/vpc/installer/subnets/private"])
   tags        = local.common_tags
 }
