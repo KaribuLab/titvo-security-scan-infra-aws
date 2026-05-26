@@ -1,5 +1,5 @@
 terraform {
-  source = "git::https://github.com/KaribuLab/terraform-aws-parameter-upsert.git?ref=v0.7.1"
+  source = "git::https://github.com/KaribuLab/terraform-aws-parameter-upsert.git?ref=v0.7.2"
 }
 
 locals {
@@ -221,7 +221,7 @@ include {
 
 inputs = {
   base_path      = local.base_path
-  binary_version = "v0.7.1"
+  binary_version = "v0.7.2"
   parameters = [
     {
       path        = "sqs/mcp/git-commit-files/input/queue_arn"
