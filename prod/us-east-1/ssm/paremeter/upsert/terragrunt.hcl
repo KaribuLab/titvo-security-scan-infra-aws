@@ -107,6 +107,15 @@ dependency "s3_git_commit_files" {
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
 }
 
+dependency "s3_rag_index" {
+  config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/s3/rag-index"
+  mock_outputs = {
+    bucket_arn = "arn:aws:s3:::test-rag-index"
+    bucket_id  = "test-rag-index"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+}
+
 dependency "dynamo_apikey" {
   config_path = "${get_parent_terragrunt_dir()}/${local.environment.locals.name}/us-east-1/dynamo/apikey"
   mock_outputs = {
@@ -362,6 +371,20 @@ inputs = {
       type        = "String"
       tier        = "Standard"
       description = "S3 git-commit-files bucket name"
+    },
+    {
+      path        = "s3/rag-index/bucket_arn"
+      value       = dependency.s3_rag_index.outputs.bucket_arn
+      type        = "String"
+      tier        = "Standard"
+      description = "S3 rag-index bucket ARN"
+    },
+    {
+      path        = "s3/rag-index/bucket_name"
+      value       = dependency.s3_rag_index.outputs.bucket_id
+      type        = "String"
+      tier        = "Standard"
+      description = "S3 rag-index bucket name"
     },
     {
       path        = "dynamo/apikey-table-arn"
