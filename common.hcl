@@ -13,7 +13,7 @@ locals {
   bucket_name      = "${local.project_name}-${local.region}-tfstate${local.bucket_suffix}"
   dynamodb_table   = "${local.project_name}-tfstate-lock"
   tags_file_path   = "${get_terragrunt_dir()}/common_tags.json"
-  provider_version = "6.7.0"
+  provider_version = "6.46.0"
   tags = merge(fileexists(local.tags_file_path) ? jsondecode(file(local.tags_file_path)) : {}, {
     Project = "Titvo"
   })

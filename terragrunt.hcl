@@ -1,6 +1,12 @@
 locals {
   common = read_terragrunt_config(find_in_parent_folders("common.hcl"))
   region = read_terragrunt_config(find_in_parent_folders("region.hcl"))
+
+  provider_override = read_terragrunt_config(
+    find_in_parent_folders("provider_override.hcl", "${get_terragrunt_dir()}/__skip.hcl"),
+    { locals = { manage_required_providers = true } }
+  )
+  manage_required_providers = local.provider_override.locals.manage_required_providers
 }
 
 generate "provider" {
@@ -20,6 +26,22 @@ generate "backend" {
   terraform {
     backend "s3" {}
   }
+EOF
+}
+
+generate "provider_version" {
+  path      = "provider_version.tf"
+  if_exists = "overwrite_terragrunt"
+  disable   = !local.manage_required_providers
+  contents  = <<EOF
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "${local.common.locals.provider_version}"
+    }
+  }
+}
 EOF
 }
 
