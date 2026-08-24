@@ -15,6 +15,24 @@ locals {
     {
       name = "scan_id"
       type = "S"
+    },
+    {
+      name = "repository_id"
+      type = "S"
+    },
+    {
+      name = "created_at"
+      type = "S"
+    }
+  ]
+
+  global_secondary_indexes = [
+    {
+      name               = "repository_id_index"
+      hash_key           = "repository_id"
+      range_key          = "created_at"
+      projection_type    = "INCLUDE"
+      non_key_attributes = ["status", "source", "branch", "updated_at", "job_id"]
     }
   ]
 }
@@ -23,10 +41,11 @@ include {
   path = find_in_parent_folders()
 }
 inputs = {
-  hash_key           = local.hash_key
-  ttl_attribute_name = local.ttl_attribute_name
-  ttl_enabled        = local.ttl_enabled
-  attributes         = local.attributes
-  name               = local.name
-  tags               = local.common_tags
+  hash_key                 = local.hash_key
+  ttl_attribute_name       = local.ttl_attribute_name
+  ttl_enabled              = local.ttl_enabled
+  attributes               = local.attributes
+  global_secondary_indexes = local.global_secondary_indexes
+  name                     = local.name
+  tags                     = local.common_tags
 }
